@@ -108,6 +108,9 @@ Once you have implemented the `readmap` program (and tested it to the best of yo
 
 ## Insights you may have had while implementing the algorithm
 
+### Assumptions
+* Sequences contain dna with only symbols from acgt. 
+
 ## Problems encountered if any
 
 ## Validation
