@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include "minunit.h"
-#include "../src/parsers/simple-fasta-parser.h"
-#include "../src/helper.h"
+#include "../src/func/parsers/simple-fasta-parser.h"
+#include "../src/func/helper.h"
 #include "testHelper.h"
 
 

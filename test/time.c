@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <malloc.h>
-#include "../src/parsers/simple-fasta-parser.h"
-#include "../src/helper.h"
-#include "../src/sa.h"
-#include "../src/rotater.h"
+#include "../src/func/parsers/simple-fasta-parser.h"
+#include "../src/func/helper.h"
+#include "../src/func/sa.h"
+#include "../src/func/rotater.h"
 #include <sys/time.h>
 #define FPA 32
 #define LPA 126

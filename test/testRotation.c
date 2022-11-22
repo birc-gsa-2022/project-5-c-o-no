@@ -1,7 +1,7 @@
 #include "minunit.h"
-#include "../src/helper.h"
+#include "../src/func/helper.h"
 #include "testHelper.h"
-#include "../src/rotater.h"
+#include "../src/func/rotater.h"
 
 int lenMis = 12;
 

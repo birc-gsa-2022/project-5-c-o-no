@@ -1,6 +1,6 @@
 #include "minunit.h"
-#include "../src/sa.h"
-#include "../src/helper.h"
+#include "../src/func/sa.h"
+#include "../src/func/helper.h"
 #include "testHelper.h"
 
 
