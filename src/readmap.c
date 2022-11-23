@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <malloc.h>
+#include "func/sa.h"
+#include "func/helper.h"
+#include "func/parsers/simple-fasta-parser.h"
+
 
 static void print_usage(const char *progname)
 {
@@ -16,6 +21,18 @@ int main(int argc, char const *argv[])
     {
         // preprocessing
         printf("Preprocessing genome %s.\n", argv[2]);
+
+        // preprocessing
+        char* fastaStr = read_file(argv[2]);
+        char* processFileName = get_file_name_by_fa(argv[2]);
+        FILE* processFile = get_file(processFileName);
+        free(processFileName);
+        struct FastaContainer* fastaContainer = parse_fasta(fastaStr);
+        int** SAs = constructMultipleSARadix(fastaContainer);
+        processFastas(processFile, fastaContainer, SAs);
+        fclose(processFile);
+        free_fasta_container(fastaContainer);
+        free(SAs);
     }
     else if ((argc == 5) && strcmp("-d", argv[1]) == 0)
     {
@@ -24,6 +41,14 @@ int main(int argc, char const *argv[])
         const char *reads = argv[4];
         printf("Mapping in genome %s for reads in %s within distance %d.\n",
                genome, reads, d);
+
+        char* processFileName = get_file_name_by_fa(genome);
+        char* processString = read_file(processFileName);
+        free(processFileName);
+        char* readString = read_file(reads);
+        readFromProcessed(processString, readString);
+        free(processString);
+        free(readString);
     }
     else
     {

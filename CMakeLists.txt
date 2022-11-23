@@ -7,7 +7,7 @@ file(GLOB readmapFiles
         "src/func/parsers/*.c"
         )
 
-add_executable(readmap src/readmap.c)
+add_executable(readmap src/readmap.c ${readmapFiles})
 add_test(example example)
 
 add_executable(testing1 test/tests.c ${readmapFiles})
