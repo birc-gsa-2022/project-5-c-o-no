@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include "approx.h"
 #include "rotater.h"
+#define forAlphabet(code) for(int sym=1; sym<5; sym++)code(sym, rec, com); //This is weird, I love it!
+#define resetRange rec->r->start = rStart; rec->r->end = rEnd;
 
 void makeD(int* D, int* C, int** RO, int* pattern, int n, int m, struct Range* r) {
     int jumpChar;
@@ -20,39 +22,36 @@ void makeD(int* D, int* C, int** RO, int* pattern, int n, int m, struct Range* r
     }
 }
 
+void recurseM(int sym, struct Recur* rec, struct CommenRec* com) {
+    //TODO
+    //editString[editIndex] = 'M';
+}
+void recurseI(int sym, struct Recur* rec, struct CommenRec* com) {
+    //TODO
+}
+void recurseD(int sym, struct Recur* rec, struct CommenRec* com) {
+    //TODO
+}
+
 //TODO make not recursive
-void recurseApprox(int patIndex, int k, char* editString, int editIndex, struct CommenRec* com) {
-    if(com->D[patIndex] < k) return;
-    if(patIndex == com->m) {
+void recurseApprox(struct Recur* rec, struct CommenRec* com) {
+    if(com->D[rec->patIndex] < rec->k) return;
+    if(rec->patIndex == com->m) {
         //TODO report
         //TODO will need to copy editString if it is not printed directly
     }
+    int patChar = com->pattern[rec->patIndex];
+    int rStart = rec->r->start;
+    int rEnd = rec->r->end;
 
-    int patChar = com->pattern[patIndex];
-    int rStart = com->r->start;
-    int rEnd = com->r->end;
-
-    //Insert
-    editString[editIndex] = 'I';
-
-
-    //TODO
-
-
-
-    //Delete
-    if(patIndex) { //Removes initial deletions
-        editString[editIndex] = 'D';
-        //TODO
+    forAlphabet(recurseI);
+    resetRange;
+    if(rec->patIndex) { //Removes initial deletions
+        forAlphabet(recurseD);
     }
-
-    //Substitution / mismatch
-    editString[editIndex] = 'M';
-    for(int sym=1; sym<5; sym++) {
-
-
-    }
-    //TODO
+    resetRange;
+    forAlphabet(recurseM);
+    resetRange;
 }
 
 void runApprox(int* pattern, int patIndex, int n, int m, int* D, int* C, int** O, int k, char* editString, int editIndex, struct Range* r) {
@@ -63,8 +62,13 @@ void runApprox(int* pattern, int patIndex, int n, int m, int* D, int* C, int** O
     com->D = D;
     com->C = C;
     com->O = O;
-    com->r = r;
+    struct Recur* rec = malloc(sizeof *rec);
+    rec->patIndex = patIndex;
+    rec->k = k;
+    rec->editString = editString;
+    rec->editIndex = editIndex;
+    rec->r = r;
 
-    recurseApprox(patIndex, k, editString, editIndex, com);
+    recurseApprox(rec, com);
 
 }
