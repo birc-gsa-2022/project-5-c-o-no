@@ -1,6 +1,5 @@
 #include "approx.h"
 #include "rotater.h"
-#include "rotater.h"
 
 void makeD(int* D, int* C, int** RO, int* pattern, int n, int m, struct Range* r) {
     int jumpChar;
@@ -10,7 +9,7 @@ void makeD(int* D, int* C, int** RO, int* pattern, int n, int m, struct Range* r
         jumpChar = pattern[i];
         r->start = jump(r->start, jumpChar, C, RO);
         r->end = jump(r->end, jumpChar, C, RO);
-        D[i] = i ? D[i-1] : 0
+        D[i] = i ? D[i-1] : 0;
         if(r->start>=r->end) {
             D[i]++;
             r->start = 0;
@@ -35,6 +34,7 @@ void runApprox(int* pattern, int patIndex, int n, int m, int* D, int* C, int** O
 
         //Insert
         editString[editIndex] = 'I';
+        //jump();
         //TODO
 
 

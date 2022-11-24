@@ -39,15 +39,19 @@ int jump(int bwtIndex, int jumpChar, int* c, int** o) {
     return c[jumpChar] + oLookUp(o, jumpChar, bwtIndex);
 }
 
+void limitRangeByChar(int jumpChar, struct Range* r, int* C, int** O) {
+    if(r->start>=r->end) return;
+    r->start = jump(r->start, jumpChar, C, O);
+    r->end = jump(r->end, jumpChar, C, O);
+}
+
 void rotateString(const int* string, int stringLen, int* c, int** o, int btwLen, struct Range* r) {
     int jumpChar;
     r->start = 0;
     r->end = btwLen;
     for(int i=stringLen-1; i>=0; i--) {
-        if(r->start>=r->end) return;
         jumpChar = string[i];
-        r->start = jump(r->start, jumpChar, c, o);
-        r->end = jump(r->end, jumpChar, c, o);
+        limitRangeByChar(jumpChar, r, c, o);
     }
 
 }
