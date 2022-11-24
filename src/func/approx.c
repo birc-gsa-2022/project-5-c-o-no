@@ -1,3 +1,5 @@
+#include <malloc.h>
+#include <stdio.h>
 #include "approx.h"
 #include "rotater.h"
 
@@ -18,39 +20,51 @@ void makeD(int* D, int* C, int** RO, int* pattern, int n, int m, struct Range* r
     }
 }
 
-void runApprox(int* pattern, int patIndex, int n, int m, int* D, int* C, int** O, int k, char* editString, int editIndex, struct Range* r) {
+//TODO make not recursive
+void recurseApprox(int patIndex, int k, char* editString, int editIndex, struct CommenRec* com) {
+    if(com->D[patIndex] < k) return;
+    if(patIndex == com->m) {
+        //TODO report
+        //TODO will need to copy editString if it is not printed directly
+    }
 
-    //TODO make not recursive
-    void recurseApprox(int patIndex, int k, char* editString, int editIndex, struct Range* r) {
-        if(D[patIndex] < k) return;
-        if(patIndex == m) {
-            //TODO report
-            //TODO will need to copy editString if it is not printed directly
-        }
+    int patChar = com->pattern[patIndex];
+    int rStart = com->r->start;
+    int rEnd = com->r->end;
 
-        int patChar = pattern[patIndex];
-        int rStart = r->start;
-        int rEnd = r->end;
-
-        //Insert
-        editString[editIndex] = 'I';
-        //jump();
-        //TODO
+    //Insert
+    editString[editIndex] = 'I';
 
 
+    //TODO
 
-        //Delete
-        if(patIndex) { //Removes initial deletions
-            editString[editIndex] = 'D';
-            //TODO
-        }
 
-        //Substitution / mismatch
-        editString[editIndex] = 'M';
+
+    //Delete
+    if(patIndex) { //Removes initial deletions
+        editString[editIndex] = 'D';
         //TODO
     }
 
-    recurseApprox(patIndex, k, editString, editIndex, r);
+    //Substitution / mismatch
+    editString[editIndex] = 'M';
+    for(int sym=1; sym<5; sym++) {
 
+
+    }
+    //TODO
+}
+
+void runApprox(int* pattern, int patIndex, int n, int m, int* D, int* C, int** O, int k, char* editString, int editIndex, struct Range* r) {
+    struct CommenRec* com = malloc(sizeof *com);
+    com->pattern = pattern;
+    com->n = n;
+    com->m = m;
+    com->D = D;
+    com->C = C;
+    com->O = O;
+    com->r = r;
+
+    recurseApprox(patIndex, k, editString, editIndex, com);
 
 }
