@@ -16,6 +16,7 @@ struct ApproxMatchContainer {
 
 struct Recur {
     int patIndex;
+    int patChar;
     int k;
     char* editString;
     int editIndex;
@@ -33,7 +34,7 @@ struct CommenRec {
 
 void makeD(int* D, int* C, int** RO, int* pattern, int n, int m, struct Range* r);
 void recurseM(int sym, struct Recur* rec, struct CommenRec* com);
-void recurseI(int sym, struct Recur* rec, struct CommenRec* com);
+void recurseI(struct Recur* rec, struct CommenRec* com);
 void recurseD(int sym, struct Recur* rec, struct CommenRec* com);
 void recurseApprox(struct Recur* rec, struct CommenRec* com);
 void runApprox(int* pattern, int patIndex, int n, int m, int* D, int* C, int** O, int k, char* editString, int editIndex, struct Range* r);
