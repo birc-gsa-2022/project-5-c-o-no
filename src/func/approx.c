@@ -3,7 +3,7 @@
 #include "approx.h"
 #include "rotater.h"
 #define reset rec->r->start = rStart; rec->r->end = rEnd; rec->k=k; rec->patIndex=patIndex;
-#define forAlphabet(code) for(int sym=1; sym<5; sym++)code(sym, rec, com); reset; //This is weird, I love it!
+#define forAlphabet(code) for(int sym=1; sym<5; sym++) {code(sym, rec, com); reset;} //This is weird, I love it!
 
 void makeD(int* D, int* C, int** RO, int* pattern, int n, int m, struct Range* r) {
     int jumpChar;
