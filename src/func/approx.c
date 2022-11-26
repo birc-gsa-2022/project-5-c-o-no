@@ -2,23 +2,24 @@
 #include <stdio.h>
 #include "approx.h"
 #include "rotater.h"
+#include <string.h>
 #define reset rec->r->start = rStart; rec->r->end = rEnd; rec->k=k; rec->patIndex=patIndex;
 #define forAlphabet(code) for(int sym=1; sym<5; sym++) {code(sym, rec, com); reset;} //This is weird, I love it!
 
-void makeD(int* D, int* C, int** RO, int* pattern, int n, int m, struct Range* r) {
+void makeD(int* D, int* C, int** RO, const int* pattern, int n, int m, struct Range* r) {
     int jumpChar;
     r->start = 0;
-    r->end = n+1;
+    r->end = n;
     for(int i=0; i<m; i++) {
         jumpChar = pattern[i];
-        r->start = jump(r->start, jumpChar, C, RO);
-        r->end = jump(r->end, jumpChar, C, RO);
+        limitRangeByChar(jumpChar, r, C, RO);
         D[i] = i ? D[i-1] : 0;
-        if(r->start>=r->end) {
+        if(r->start >= r->end) {
             D[i]++;
             r->start = 0;
-            r->end = n+1;
+            r->end = n;
         }
+        printf("D[%d]=%d\n",i,D[i]);
     }
 }
 
@@ -54,8 +55,18 @@ void recurseApprox(struct Recur* rec, struct CommenRec* com) {
 
     if(com->D[rec->patIndex] < rec->k) return;
     if(rec->patIndex == com->m) {
-        //TODO report
-        //TODO will need to copy editString if it is not printed directly
+        struct ApproxMatch* match = malloc(sizeof *match);
+        match->rStart = rec->r->start;
+        match->rEnd = rec->r->end;
+        match->editStringLen = rec->k;
+        rec->editString[rec->k] = '\0';
+        match->editString = strdup(rec->editString);
+        if(com->appCont->amount>= com->appCont->listSize) {
+            com->appCont->listSize <<= 1;
+            com->appCont->AMs = realloc(com->appCont->AMs, com->appCont->listSize*sizeof *(com->appCont->AMs));
+        }
+        com->appCont->AMs[(com->appCont->amount)++] = match;
+        return;
     }
     int patChar = com->pattern[rec->patIndex];
     rec->patChar = patChar;
@@ -75,6 +86,11 @@ void recurseApprox(struct Recur* rec, struct CommenRec* com) {
 }
 
 void runApprox(int* pattern, int patIndex, int n, int m, int* D, int* C, int** O, int k, char* editString, int editIndex, struct Range* r) {
+    struct ApproxMatchContainer* appCont = malloc(sizeof *appCont);
+    appCont->listSize = 8;
+    appCont->AMs = malloc(8*sizeof *appCont->AMs);
+    appCont->amount = 0;
+
     struct CommenRec* com = malloc(sizeof *com);
     com->pattern = pattern;
     com->n = n;
@@ -82,6 +98,7 @@ void runApprox(int* pattern, int patIndex, int n, int m, int* D, int* C, int** O
     com->D = D;
     com->C = C;
     com->O = O;
+    com->appCont = appCont;
     struct Recur* rec = malloc(sizeof *rec);
     rec->patIndex = patIndex;
     rec->k = k;
@@ -90,5 +107,4 @@ void runApprox(int* pattern, int patIndex, int n, int m, int* D, int* C, int** O
     rec->r = r;
 
     recurseApprox(rec, com);
-
 }

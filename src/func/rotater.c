@@ -3,7 +3,7 @@
 
 void makeOandC(const int* bwt, int n, int** O, int* C, int alphabetSize) {
 
-    int* firstRow = calloc(--alphabetSize,sizeof *firstRow);
+    int* firstRow = calloc(4,sizeof *firstRow);
     if(bwt[0]) {
         firstRow[bwt[0]-1] = 1;
     }
@@ -12,10 +12,10 @@ void makeOandC(const int* bwt, int n, int** O, int* C, int alphabetSize) {
     int* prevRow;
 
     for(int i=1; i<n; i++) {
-        int* row = malloc(alphabetSize*sizeof *row);
+        int* row = malloc(4*sizeof *row);
         prevRow = O[i-1];
         int curChar = bwt[i];
-        for(int j=0; j<alphabetSize; j++) {
+        for(int j=0; j<5; j++) {
             row[j] = prevRow[j] + (curChar-1==j);
         }
         C[curChar]++;
@@ -23,7 +23,7 @@ void makeOandC(const int* bwt, int n, int** O, int* C, int alphabetSize) {
     }
 
     int accum = 0;
-    for(int i=0; i<alphabetSize+1; i++) {
+    for(int i=0; i<6; i++) {
         int c = C[i];
         C[i] = accum;
         accum += c;
