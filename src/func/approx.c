@@ -3,7 +3,7 @@
 #include "approx.h"
 #include "rotater.h"
 #include <string.h>
-#define reset rec->r->start = rStart; rec->r->end = rEnd; rec->patIndex=patIndex; rec->editIndex = editIndex; rec->editAmount = editA;
+#define reset rec->r->start = rStart; rec->r->end = rEnd; rec->patIndex=patIndex; rec->patChar = com->pattern[rec->patIndex]; rec->editIndex = editIndex; rec->editAmount = editA;
 #define forAlphabet(code) for(int sym=1; sym<5; sym++) {code(sym, rec, com); reset;} //This is weird, I love it!
 
 void makeD(int* D, int* C, int** RO, const int* pattern, int n, int m, struct Range* r) {
@@ -24,6 +24,9 @@ void makeD(int* D, int* C, int** RO, const int* pattern, int n, int m, struct Ra
 
 
 void recurseM(int sym, struct Recur* rec, struct CommenRec* com) {
+    if(rec->editIndex==2 && sym==4) {
+        printf("");
+    }
     rec->editString[rec->editIndex++] = 'M';
     if(sym != rec->patChar) ++rec->editAmount;
     --rec->patIndex;
@@ -41,6 +44,9 @@ void recurseI(struct Recur* rec, struct CommenRec* com) {
 }
 
 void recurseD(int sym, struct Recur* rec, struct CommenRec* com) {
+    if(rec->editIndex==3) {
+        printf("");
+    }
     rec->editString[rec->editIndex++] = 'D';
     ++rec->editAmount;
     limitRangeByChar(sym, rec->r, com->C, com->O);
@@ -52,7 +58,9 @@ void recurseD(int sym, struct Recur* rec, struct CommenRec* com) {
 void recurseApprox(struct Recur* rec, struct CommenRec* com) {
     //TODO recurse with values instead of reference
 
-    if(rec->editAmount > com->allowedEdits) return;
+    if(rec->editAmount > com->allowedEdits) {
+        return;
+    }
 
     if(rec->patIndex == -1) {
         //Report
@@ -71,7 +79,9 @@ void recurseApprox(struct Recur* rec, struct CommenRec* com) {
         return;
     }
 
-    if(com->D[rec->patIndex] < com->allowedEdits) return;
+    if(rec->patIndex && ((com->allowedEdits)-(rec->editAmount) < com->D[rec->patIndex-1])) {
+        return;
+    }
 
     int patChar = com->pattern[rec->patIndex];
     rec->patChar = patChar;
@@ -81,9 +91,12 @@ void recurseApprox(struct Recur* rec, struct CommenRec* com) {
     int editIndex = rec->editIndex;
     int editA = rec->editAmount;
 
-    recurseI(rec, com);
-    reset;
-    if(rec->patIndex == com->m-1) { //Removes initial deletions
+    if(rec->editAmount < com->allowedEdits) {
+        recurseI(rec, com);
+        reset;
+    }
+
+    if((rec->patIndex != com->m-1) && (rec->editAmount < com->allowedEdits)) { //Removes initial deletions
         forAlphabet(recurseD);
         reset;
     }
