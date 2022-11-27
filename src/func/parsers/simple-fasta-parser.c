@@ -75,11 +75,11 @@ void update_fasta_by_sequence(char **strptr, struct Fasta *f) {
     *strptr += i+shift;
     int *sightings = alloc_sightings(bigAlphabet, alphabetSize);
 
-    char * debugger = malloc((i+1)*sizeof *debugger);
-    debugger[i+1] = '\0';
+    //char * debugger = malloc((i+1)*sizeof *debugger);
+    //debugger[i+1] = '\0';
 
     for(int l=0; l<i+1; l++) {
-        debugger[l] = string[l];
+        //debugger[l] = string[l];
         string[l] = (char) bigAlphabet[string[l]];
     }
 
@@ -88,7 +88,7 @@ void update_fasta_by_sequence(char **strptr, struct Fasta *f) {
     f->alphabet.sightings = sightings;
     f->fasta_sequence = string;
     f->fasta_len = i+1;
-    f->fasta_sequence_debugger = debugger;
+    //f->fasta_sequence_debugger = debugger;
 }
 
 

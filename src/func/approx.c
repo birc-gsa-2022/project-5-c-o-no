@@ -3,7 +3,7 @@
 #include "approx.h"
 #include "rotater.h"
 #include <string.h>
-#define reset rec->r->start = rStart; rec->r->end = rEnd; rec->k=k; rec->patIndex=patIndex;
+#define reset rec->r->start = rStart; rec->r->end = rEnd; rec->patIndex=patIndex; rec->editIndex = editIndex; rec->editAmount = editA;
 #define forAlphabet(code) for(int sym=1; sym<5; sym++) {code(sym, rec, com); reset;} //This is weird, I love it!
 
 void makeD(int* D, int* C, int** RO, const int* pattern, int n, int m, struct Range* r) {
@@ -19,15 +19,14 @@ void makeD(int* D, int* C, int** RO, const int* pattern, int n, int m, struct Ra
             r->start = 0;
             r->end = n;
         }
-        printf("D[%d]=%d\n",i,D[i]);
     }
 }
 
 
 void recurseM(int sym, struct Recur* rec, struct CommenRec* com) {
     rec->editString[rec->editIndex++] = 'M';
-    if(sym != rec->patChar) ++rec->k;
-    ++rec->patIndex;
+    if(sym != rec->patChar) ++rec->editAmount;
+    --rec->patIndex;
     limitRangeByChar(sym, rec->r, com->C, com->O);
     if(rec->r->start == rec->r->end) return;
     recurseApprox(rec, com);
@@ -35,15 +34,15 @@ void recurseM(int sym, struct Recur* rec, struct CommenRec* com) {
 
 void recurseI(struct Recur* rec, struct CommenRec* com) {
     rec->editString[rec->editIndex++] = 'I';
-    ++rec->k;
-    ++rec->patIndex;
+    --rec->patIndex;
+    ++rec->editAmount;
     //Do not limit range, since insert whatever we need without looking at x
     recurseApprox(rec, com);
 }
 
 void recurseD(int sym, struct Recur* rec, struct CommenRec* com) {
     rec->editString[rec->editIndex++] = 'D';
-    ++rec->k;
+    ++rec->editAmount;
     limitRangeByChar(sym, rec->r, com->C, com->O);
     if(rec->r->start == rec->r->end) return;
     recurseApprox(rec, com);
@@ -51,15 +50,18 @@ void recurseD(int sym, struct Recur* rec, struct CommenRec* com) {
 
 //TODO make not recursive
 void recurseApprox(struct Recur* rec, struct CommenRec* com) {
-    //TODO recurse with values instead of structs
+    //TODO recurse with values instead of reference
 
-    if(com->D[rec->patIndex] < rec->k) return;
-    if(rec->patIndex == com->m) {
-        struct ApproxMatch* match = malloc(sizeof *match);
+    if(rec->editAmount > com->allowedEdits) return;
+
+    if(rec->patIndex == -1) {
+        //Report
+        //Save in struct for easy debug, instead of printing
+        struct ApproxMatch* match = malloc(sizeof *match); // Todo: get from pool?
         match->rStart = rec->r->start;
         match->rEnd = rec->r->end;
-        match->editStringLen = rec->k;
-        rec->editString[rec->k] = '\0';
+        match->editStringLen = rec->editIndex;
+        rec->editString[rec->editIndex] = '\0';
         match->editString = strdup(rec->editString);
         if(com->appCont->amount>= com->appCont->listSize) {
             com->appCont->listSize <<= 1;
@@ -68,24 +70,29 @@ void recurseApprox(struct Recur* rec, struct CommenRec* com) {
         com->appCont->AMs[(com->appCont->amount)++] = match;
         return;
     }
+
+    if(com->D[rec->patIndex] < com->allowedEdits) return;
+
     int patChar = com->pattern[rec->patIndex];
     rec->patChar = patChar;
     int rStart = rec->r->start;
     int rEnd = rec->r->end;
-    int k = rec->k;
     int patIndex = rec->patIndex;
+    int editIndex = rec->editIndex;
+    int editA = rec->editAmount;
 
     recurseI(rec, com);
     reset;
-    if(rec->patIndex) { //Removes initial deletions
+    if(rec->patIndex == com->m-1) { //Removes initial deletions
         forAlphabet(recurseD);
+        reset;
     }
-    reset;
+
     forAlphabet(recurseM);
     reset;
 }
 
-void runApprox(int* pattern, int patIndex, int n, int m, int* D, int* C, int** O, int k, char* editString, int editIndex, struct Range* r) {
+struct ApproxMatchContainer* runApprox(int* pattern, int n, int m, int* D, int* C, int** O, int allowedEdits, char* editString, struct Range* r) {
     struct ApproxMatchContainer* appCont = malloc(sizeof *appCont);
     appCont->listSize = 8;
     appCont->AMs = malloc(8*sizeof *appCont->AMs);
@@ -99,12 +106,16 @@ void runApprox(int* pattern, int patIndex, int n, int m, int* D, int* C, int** O
     com->C = C;
     com->O = O;
     com->appCont = appCont;
+    com->allowedEdits = allowedEdits;
     struct Recur* rec = malloc(sizeof *rec);
-    rec->patIndex = patIndex;
-    rec->k = k;
+    rec->patIndex = m-1;
     rec->editString = editString;
-    rec->editIndex = editIndex;
+    rec->editIndex = 0;
     rec->r = r;
+    r->start = 0;
+    r->end = n;
+    rec->editAmount = 0;
 
     recurseApprox(rec, com);
+    return appCont;
 }

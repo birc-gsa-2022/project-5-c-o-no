@@ -22,6 +22,18 @@ void printString(char * a, int len) {
     printf("\n");
 }
 
+void printO(int** o, int numRows) {
+    printf("----------------\n");
+    for (int i = 0; i < numRows; i++) {
+        for (int j = 0; j < 4; j++) {
+            printf("%d, ", o[i][j]);
+        }
+        printf("\n");
+    }
+    printf("----------------\n");
+}
+
+
 char *read_file(const char *file_name) {
     FILE * fp = fopen(file_name, "rb");
 

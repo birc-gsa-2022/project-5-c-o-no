@@ -1,5 +1,7 @@
 #include <malloc.h>
 #include "rotater.h"
+#include <stdio.h>
+#include "helper.h"
 
 void makeOandC(const int* bwt, int n, int** O, int* C, int alphabetSize) {
 
@@ -28,6 +30,7 @@ void makeOandC(const int* bwt, int n, int** O, int* C, int alphabetSize) {
         C[i] = accum;
         accum += c;
     }
+
 }
 
 int oLookUp(int** o, int searchChar, int i) {

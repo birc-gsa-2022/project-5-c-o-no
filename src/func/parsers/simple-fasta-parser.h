@@ -10,7 +10,7 @@ struct Alphabet {
 struct Fasta {
     char *fasta_head;
     char *fasta_sequence;
-    char *fasta_sequence_debugger;
+    //char *fasta_sequence_debugger;
     int fasta_len;
     struct Alphabet alphabet;
 };

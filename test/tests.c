@@ -17,7 +17,7 @@ void test_teardown(void) {
 
 
 MU_TEST(test_parser_abc) {
-    char * mal = malloc(sizeof(int)*3);
+    char * mal = malloc(sizeof(*mal)*3);
     char * sequence = "ABC";
     strcpy(mal, sequence);
     struct Fasta * f = malloc(sizeof *f);
@@ -31,11 +31,6 @@ MU_TEST(test_parser_abc) {
     mu_assert_int_eq(2, f->fasta_sequence[1]);
     mu_assert_int_eq(3, f->fasta_sequence[2]);
     mu_assert_int_eq(0, f->fasta_sequence[3]);
-
-    mu_assert_int_eq('A', f->fasta_sequence_debugger[0]);
-    mu_assert_int_eq('B', f->fasta_sequence_debugger[1]);
-    mu_assert_int_eq('C', f->fasta_sequence_debugger[2]);
-    mu_assert_int_eq('\0', f->fasta_sequence_debugger[3]);
 
     mu_assert_int_eq(1, f->alphabet.symbols['A']);
     mu_assert_int_eq(2, f->alphabet.symbols['B']);
