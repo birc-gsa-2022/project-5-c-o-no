@@ -170,7 +170,6 @@ int main(int argc, char *argv[]) {
     // Path to the folder where test-data is located should be given.
     // (typically ../ if running from the debugger (project_root/cmake-build-debug/....
     // or ./ if running directly from project root)
-    init(argv[1]);
     MU_RUN_SUITE(fasta_parser_test_suite);
     MU_REPORT();
     return MU_EXIT_CODE;

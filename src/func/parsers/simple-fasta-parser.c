@@ -121,7 +121,7 @@ void freeAlphabet(struct Alphabet a) {
 
 void freeFasta(struct Fasta *fasta) {
     //Head and sequence can't be freed, since they are not malloced, but pointers to other strings
-    free(fasta->fasta_sequence_debugger);
+    //free(fasta->fasta_sequence_debugger);
     freeAlphabet(fasta->alphabet);
 }
 
