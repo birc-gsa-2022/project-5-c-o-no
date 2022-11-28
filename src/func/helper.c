@@ -112,7 +112,7 @@ void processFastas(FILE* processFile, struct FastaContainer* fastaContainer, int
         fprintf(processFile, "%d\n", fasta->fasta_len); //Save length
         fprintf(processFile, "%d\n", fasta->alphabet.size); //Save alphabetsize
         for(int j=0; j<fasta->fasta_len; j++) { //Save bwt
-            //TODO We can change this to compress, but not nesasary
+            //TODO We can change this to compress, but not necessary
             fprintf(processFile, "%d,", SAs[i][j] ? fasta->fasta_sequence[SAs[i][j]-1] : 0);
         }
         fprintf(processFile, "\n");
@@ -153,7 +153,7 @@ void readFromProcessed(char *processString, char* readString) {
         while(*(processString++) != '\n') {}
 
         //bwt
-        //TODO could make each symbol distinguable without ,
+        //TODO could make each symbol distinguishable without ,
         //TODO Don't make bwt, go directly to O and C
 
         int *bwt = malloc(n * sizeof *bwt);
@@ -171,7 +171,6 @@ void readFromProcessed(char *processString, char* readString) {
         int *sa = malloc(n * sizeof *sa);
         for(int i=0; i<n; i++) {
             sa[i] = atoi(processString);
-            int a = sa[i];
             while(*(processString++) != ',') {}
         }
 
