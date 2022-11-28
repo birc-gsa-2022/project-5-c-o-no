@@ -104,7 +104,7 @@ struct ReadContainer* makeReadContainer(char* readString) {
 }
 
 
-void processFastas(FILE* processFile, struct FastaContainer* fastaContainer, int** SAs) {
+void processFastas(FILE* processFile, struct FastaContainer* fastaContainer, int** SAs, int** revSAs) {
     //TODO make binary file instead of txt
     for(int i=0; i<fastaContainer->numberOfFastas; i++) {
         struct Fasta* fasta = fastaContainer->fastas[i];
@@ -120,7 +120,11 @@ void processFastas(FILE* processFile, struct FastaContainer* fastaContainer, int
             fprintf(processFile, "%d,", SAs[i][j]);
         }
         fprintf(processFile, "\n");
-
+        for(int j=0; j<fasta->fasta_len; j++) { //Save revbwt
+            //TODO We can change this to compress, but not necessary
+            fprintf(processFile, "%d,", revSAs[i][j] ? fasta->fasta_sequence[revSAs[i][j]-1] : 0);
+        }
+        fprintf(processFile, "\n");
         for(int j=0; j<128; j++) {
             //TODO do in parser
             if(fasta->alphabet.symbols[j]) fprintf(processFile, "%c", j);
@@ -171,6 +175,14 @@ void readFromProcessed(char *processString, char* readString) {
         int *sa = malloc(n * sizeof *sa);
         for(int i=0; i<n; i++) {
             sa[i] = atoi(processString);
+            while(*(processString++) != ',') {}
+        }
+
+        while(*(processString++) != '\n') {}
+
+        int *revbwt = malloc(n * sizeof *bwt);
+        for(int i=0; i<n; i++) {
+            bwt[i] = atoi(processString);
             while(*(processString++) != ',') {}
         }
 

@@ -3,14 +3,14 @@
 #include <malloc.h>
 
 
-int *constructSARadix(struct Fasta fasta) {
+int *constructSARadix(struct Fasta fasta, int reverse) {
     char *x = fasta.fasta_sequence;
     int n = fasta.fasta_len;
     int *sa = malloc(n * sizeof *sa);
     int *saCopy = malloc(n * sizeof *sa);
 
     for (int i = 0; i<n; i++) {
-        sa[i] = i;
+        sa[i] = reverse ? n-1-i : i;
     }
     int *bucketsIndices = fasta.alphabet.sightings;
     int accumSum = 0;
@@ -21,20 +21,36 @@ int *constructSARadix(struct Fasta fasta) {
     }
     int *buckets = malloc(fasta.alphabet.size*sizeof *buckets);
 
-    for(int i=n-1; i>=0; i--) {
-        memset(buckets, 0, fasta.alphabet.size * sizeof *buckets);
-        for(int j=0; j<n; j++) {
-            int charIndex = (sa[j] + i) % n;
-            char c = x[charIndex];
-            int elemInBucket = buckets[c]++;
-            int saIndex = bucketsIndices[c] + elemInBucket;
-            saCopy[saIndex] = sa[j];
+    if(reverse) {
+        for (int i = 0; i < n; i++) {
+            memset(buckets, 0, fasta.alphabet.size * sizeof *buckets);
+            for (int j = 0; j < n; j++) {
+                int charIndex = (sa[j] + i) % n;
+                char c = x[charIndex];
+                int elemInBucket = buckets[c]++;
+                int saIndex = bucketsIndices[c] + elemInBucket;
+                saCopy[saIndex] = sa[j];
+            }
+            int *temp = sa;
+            sa = saCopy;
+            saCopy = temp;
         }
-        int *temp = sa;
-        sa = saCopy;
-        saCopy = temp;
     }
-
+    else {
+        for (int i = n - 1; i >= 0; i--) {
+            memset(buckets, 0, fasta.alphabet.size * sizeof *buckets);
+            for (int j = 0; j < n; j++) {
+                int charIndex = (sa[j] + i) % n;
+                char c = x[charIndex];
+                int elemInBucket = buckets[c]++;
+                int saIndex = bucketsIndices[c] + elemInBucket;
+                saCopy[saIndex] = sa[j];
+            }
+            int *temp = sa;
+            sa = saCopy;
+            saCopy = temp;
+        }
+    }
     free(saCopy);
     free(buckets);
 
@@ -45,12 +61,22 @@ int **constructMultipleSARadix(struct FastaContainer *fastaContainer) {
     int **SAs = malloc(fastaContainer->numberOfFastas*sizeof *SAs);
 
     for(int i=0; i<fastaContainer->numberOfFastas; i++) {
-        int *sa = constructSARadix(*(fastaContainer->fastas)[i]);
+        int *sa = constructSARadix(*(fastaContainer->fastas)[i], 0);
         SAs[i] = sa;
     }
     return SAs;
 }
 
+//TODO combine with constructMultipleSARadix
+int **constructMultipleRevSARadix(struct FastaContainer *fastaContainer) {
+    int **SAs = malloc(fastaContainer->numberOfFastas*sizeof *SAs);
+
+    for(int i=0; i<fastaContainer->numberOfFastas; i++) {
+        int *sa = constructSARadix(*(fastaContainer->fastas)[i], 1);
+        SAs[i] = sa;
+    }
+    return SAs;
+}
 
 
 
