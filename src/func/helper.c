@@ -6,6 +6,7 @@
 #include "parsers/simple-fastq-parser.h"
 #include "parsers/simple-fasta-parser.h"
 #include "rotater.h"
+#include "approx.h"
 
 void printIntArray(int * a, int len) {
     printf("[");
@@ -135,8 +136,22 @@ void processFastas(FILE* processFile, struct FastaContainer* fastaContainer, int
     }
 }
 
+void printEditString(struct ApproxMatch* am) {
+    char* editString = am->editString;
+    int len = am->editStringLen;
+    char curChar = editString[len-1];
+    int curCount = 1;
+    for(int i=len-2; i>=0; i--) {
+        if(editString[i] != curChar) {
+            printf("%d%c", curCount, curChar);
+            curChar = editString[i];
+            curCount = 1;
+        } else ++curCount;
+    }
+    printf("%d%c", curCount, curChar);
+}
 
-void readFromProcessed(char *processString, char* readString) {
+void readFromProcessed(char *processString, char* readString, int allowedEdits) {
     struct Range* saRange = malloc(sizeof *saRange);
     struct ReadContainer *read_container = makeReadContainer(readString);
 
@@ -182,9 +197,14 @@ void readFromProcessed(char *processString, char* readString) {
 
         int *revbwt = malloc(n * sizeof *bwt);
         for(int i=0; i<n; i++) {
-            bwt[i] = atoi(processString);
+            revbwt[i] = atoi(processString);
             while(*(processString++) != ',') {}
         }
+
+        int **RO = malloc(n*sizeof (*RO));
+        //TODO don't remake C
+        int* rC = calloc(alphabetSize, sizeof *rC);
+        makeOandC(revbwt, n, RO, rC, alphabetSize);
 
         while(*(processString++) != '\n') {}
 
@@ -198,21 +218,35 @@ void readFromProcessed(char *processString, char* readString) {
         for (int j = 0; j < read_container->count; j++) {
             char *readHead = read_container->heads[j];
             char *pattern = read_container->patterns[j];
-            int pattern_len = read_container->patLens[j];
+            int m = read_container->patLens[j];
 
-            int *patternConvert = malloc(pattern_len*sizeof *patternConvert);
-            for(int i=0; i<pattern_len; i++) {
+            //TODO do in parsing
+            int *patternConvert = malloc(m*sizeof *patternConvert);
+            for(int i=0; i<m; i++) {
                 patternConvert[i] = alphabet[pattern[i]];
             }
+            int* D = malloc(m*sizeof *D);
+            struct Range* Drange = malloc(sizeof *Drange);
+            makeD(D, rC, RO, patternConvert, n, m, Drange);
 
-            rotateString(patternConvert, pattern_len, C, O, n, saRange);
-            free(patternConvert);
+            char* editString = malloc(allowedEdits+m);
 
-            int start = saRange->start;
-            int end = saRange->end;
-            for(int i=start; i<end; i++) {
-                printf("%s\t%s\t%d\t%dM\t%s\n", readHead, fastaHead, sa[i]+1, pattern_len, pattern);
+            struct ApproxMatchContainer* matches = runApprox(patternConvert, n, m, D, C, O, allowedEdits, editString, saRange);
+
+            for (int i = 0; i < matches->amount; ++i) {
+                int start = matches->AMs[i]->rStart;
+                int end = matches->AMs[i]->rEnd;
+
+                for(int saIndex=start; saIndex<end; saIndex++) {
+                    printf("%s\t%s\t%d\t", readHead, fastaHead, sa[saIndex]+1);
+                    printEditString(matches->AMs[i]);
+                    printf("\t%s\n", pattern);
+                }
             }
+            free(patternConvert);
+            free(editString);
+            freeApproxMatchContainer(matches);
+            free(matches);
         }
 
         while(*(processString++) != '\n') {}

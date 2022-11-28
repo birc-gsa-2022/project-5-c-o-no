@@ -20,7 +20,7 @@ int main(int argc, char const *argv[])
     if ((argc == 3) && strcmp("-p", argv[1]) == 0)
     {
         // preprocessing
-        printf("Preprocessing genome %s.\n", argv[2]);
+        //printf("Preprocessing genome %s.\n", argv[2]);
 
         // preprocessing
         char* fastaStr = read_file(argv[2]);
@@ -40,14 +40,13 @@ int main(int argc, char const *argv[])
         int d = atoi(argv[2]); // you can do better than atoi, but I'm feeling lazy
         const char *genome = argv[3];
         const char *reads = argv[4];
-        printf("Mapping in genome %s for reads in %s within distance %d.\n",
-               genome, reads, d);
+        //printf("Mapping in genome %s for reads in %s within distance %d.\n", genome, reads, d);
 
         char* processFileName = get_file_name_by_fa(genome);
         char* processString = read_file(processFileName);
         free(processFileName);
         char* readString = read_file(reads);
-        readFromProcessed(processString, readString);
+        readFromProcessed(processString, readString, d);
         free(processString);
         free(readString);
     }

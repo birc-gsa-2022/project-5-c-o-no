@@ -78,18 +78,21 @@ int** timeConstructSAsRadix(FILE* file, struct FastaContainer* fastaContainer) {
 }
 
 void timeProcessFasta(FILE* res_file, FILE* process_file, struct FastaContainer* fastaContainer, int** SAs) {
-    struct timeval stop, start;
+    //TODO does not longer work
+    /*struct timeval stop, start;
     gettimeofday(&start, NULL);
 
     processFastas(process_file, fastaContainer, SAs);
 
     gettimeofday(&stop, NULL);
-    fprintf(res_file, "%d,", getTime(start, stop));
+    fprintf(res_file, "%d,", getTime(start, stop));*/
 }
 
 void timeReadProcessedFile(char* readString, FILE* resFile) {
     // Do the whole thing
-    char* processString = read_file("processed.txt");
+
+    //TODO does no longer work
+    /*char* processString = read_file("processed.txt");
 
     struct timeval stop, start;
     gettimeofday(&start, NULL);
@@ -97,7 +100,7 @@ void timeReadProcessedFile(char* readString, FILE* resFile) {
     readFromProcessed(processString, readString);
 
     gettimeofday(&stop, NULL);
-    fprintf(resFile, "%d,", getTime(start, stop));
+    fprintf(resFile, "%d,", getTime(start, stop));*/
 }
 
 /*

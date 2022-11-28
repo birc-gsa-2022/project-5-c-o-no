@@ -132,3 +132,7 @@ struct ApproxMatchContainer* runApprox(int* pattern, int n, int m, int* D, int* 
     recurseApprox(rec, com);
     return appCont;
 }
+
+void freeApproxMatchContainer(struct ApproxMatchContainer* approxMatchContainer) {
+
+}

@@ -42,4 +42,5 @@ void recurseI(struct Recur* rec, struct CommenRec* com);
 void recurseD(int sym, struct Recur* rec, struct CommenRec* com);
 void recurseApprox(struct Recur* rec, struct CommenRec* com);
 struct ApproxMatchContainer* runApprox(int* pattern, int n, int m, int* D, int* C, int** O, int allowedEdits, char* editString, struct Range* r);
+void freeApproxMatchContainer(struct ApproxMatchContainer* approxMatchContainer);
 #endif

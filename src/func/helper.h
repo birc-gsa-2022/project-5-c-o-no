@@ -18,6 +18,6 @@ char* get_file_name_by_fa(const char* faName);
 FILE* get_file(const char* file_name);
 struct ReadContainer* makeReadContainer(char* readString);
 void processFastas(FILE* processFile, struct FastaContainer* fastaContainer, int** SAs, int** revSAs);
-void readFromProcessed(char *processString, char* readString);
+void readFromProcessed(char *processString, char* readString, int allowedEdits);
 
 #endif //HELPER_H
