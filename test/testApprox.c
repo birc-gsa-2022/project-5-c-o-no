@@ -2,8 +2,9 @@
 #include "minunit.h"
 #include "testHelper.h"
 #include "../src/func/approx.h"
-
-
+#include "../src/func/sa.h"
+#include "../src/func/parsers/simple-fasta-parser.h"
+#include "../src/func/helper.h"
 
 MU_TEST(test_makeDeq) {
     int* C = calloc(5, sizeof *C);
@@ -320,9 +321,88 @@ MU_TEST(test_runApprox2Edits) {
     mu_assert_string_eq("MMDMM", amc->AMs[7]->editString);
 }
 
+MU_TEST(test_saAlgSmall) {
+    struct Fasta* fasta = malloc(sizeof *fasta);
+    fasta->fasta_head = "head";
+
+    char * mal = malloc(sizeof(*mal)*4);
+    char* seq = "acg";
+    strcpy(mal, seq);
+    update_fasta_by_sequence(&mal, fasta);
+    mu_assert_int_eq(4, fasta->fasta_len);
+    mu_assert_int_eq(4, fasta->alphabet.size);
+    mu_assert_int_eq(1, *fasta->alphabet.sightings);
+    mu_assert_int_eq(1, fasta->alphabet.sightings[1]);
+    mu_assert_int_eq(1, fasta->alphabet.sightings[2]);
+    mu_assert_int_eq(1, fasta->alphabet.sightings[3]);
+
+    int* sa = constructSARadix(*fasta, 0);
+    int* revSa = constructSARadix(*fasta, 1);
+
+    struct Fasta* fasta2 = malloc(sizeof *fasta);
+    fasta->fasta_head = "head";
+
+    char * mal2 = malloc(sizeof(*mal2)*4);
+    char* seq2 = "gca";
+    strcpy(mal2, seq2);
+    update_fasta_by_sequence(&mal2, fasta2);
+    mu_assert_int_eq(4, fasta->fasta_len);
+    mu_assert_int_eq(4, fasta->alphabet.size);
+    mu_assert_int_eq(1, *fasta2->alphabet.sightings);
+    mu_assert_int_eq(1, fasta2->alphabet.sightings[1]);
+    mu_assert_int_eq(1, fasta2->alphabet.sightings[2]);
+    mu_assert_int_eq(1, fasta2->alphabet.sightings[3]);
+
+    int revSaExp[4] = {3,2,1,0};
+
+    int* sa2 = constructSARadix(*fasta2, 0);
+    mu_assert_int_arr_eq(revSaExp, sa2);
+
+    int saExp[4] = {3,0,1,2};
+    //012345678
+    //214213210
+    mu_assert_int_arr_eq(saExp, sa);
+    mu_assert_int_arr_eq(revSaExp, revSa);
+    //free(mal);
+    free(sa);
+    //free(revSa);
+}
 
 
-void run_all_tests() {
+MU_TEST(test_saAlg) {
+    struct Fasta* fasta = malloc(sizeof *fasta);
+    fasta->fasta_head = "head";
+    //char* seq = "12312412";
+
+    char * mal = malloc(sizeof(*mal)*9);
+    char* seq = "abcabdab";
+    strcpy(mal, seq);
+    update_fasta_by_sequence(&mal, fasta);
+    mu_assert_int_eq(9, fasta->fasta_len);
+    mu_assert_int_eq(5, fasta->alphabet.size);
+    mu_assert_int_eq(1, *fasta->alphabet.sightings);
+    mu_assert_int_eq(3, fasta->alphabet.sightings[1]);
+    mu_assert_int_eq(3, fasta->alphabet.sightings[2]);
+    mu_assert_int_eq(1, fasta->alphabet.sightings[3]);
+    mu_assert_int_eq(1, fasta->alphabet.sightings[4]);
+
+    int* sa = constructSARadix(*fasta, 0);
+    int* revSa = constructSARadix(*fasta, 1);
+
+    //012345678
+    //123124120
+    int saExp[9] = {8, 6, 0,3,7,1,4,2,5};
+    //012345678
+    //214213210
+    int revSaExp[9] = {8,7,4,1,6,3,0,5,2};
+    mu_assert_int_arr_eq(saExp, sa);
+    mu_assert_int_arr_eq(revSaExp, revSa);
+    //free(mal);
+    free(sa);
+    free(revSa);
+}
+
+MU_TEST_SUITE(fasta_parser_test_suite) {
     MU_RUN_TEST(test_makeDeq);
     MU_RUN_TEST(test_makeDnotEq);
     MU_RUN_TEST(test_makeD1Edit);
@@ -334,10 +414,8 @@ void run_all_tests() {
     MU_RUN_TEST(test_runApproxAsym);
     MU_RUN_TEST(test_runApproxAsym2);
     MU_RUN_TEST(test_runApprox2Edits);
-}
-
-MU_TEST_SUITE(fasta_parser_test_suite) {
-    run_all_tests();
+    MU_RUN_TEST(test_saAlgSmall);
+    MU_RUN_TEST(test_saAlg);
 }
 
 

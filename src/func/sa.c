@@ -4,57 +4,46 @@
 
 
 int *constructSARadix(struct Fasta fasta, int reverse) {
-    char *x = fasta.fasta_sequence;
     int n = fasta.fasta_len;
-    int *sa = malloc(n * sizeof *sa);
-    int *saCopy = malloc(n * sizeof *sa);
+    char* x = malloc(n*sizeof *x);
+    x[n-1] = 0;
+    for(int i=0; i<n-1; i++) {
+        x[i] = fasta.fasta_sequence[reverse ? n-i-2 : i];
+    }
+    //char *x = fasta.fasta_sequence;
+    int *saReader = malloc(n * sizeof *saReader);
+    int *saWriter = malloc(n * sizeof *saReader);
 
     for (int i = 0; i<n; i++) {
-        sa[i] = reverse ? n-1-i : i;
+        saReader[i] = i;
     }
-    int *bucketsIndices = fasta.alphabet.sightings;
+    int *bucketsIndices = malloc(fasta.alphabet.size*sizeof *bucketsIndices);
     int accumSum = 0;
     for(int i=0; i<fasta.alphabet.size; i++) {
-        int sighting = bucketsIndices[i];
         bucketsIndices[i] = accumSum;
-        accumSum += sighting;
+        accumSum += fasta.alphabet.sightings[i];
     }
     int *buckets = malloc(fasta.alphabet.size*sizeof *buckets);
 
-    if(reverse) {
-        for (int i = 0; i < n; i++) {
-            memset(buckets, 0, fasta.alphabet.size * sizeof *buckets);
-            for (int j = 0; j < n; j++) {
-                int charIndex = (sa[j] + i) % n;
-                char c = x[charIndex];
-                int elemInBucket = buckets[c]++;
-                int saIndex = bucketsIndices[c] + elemInBucket;
-                saCopy[saIndex] = sa[j];
-            }
-            int *temp = sa;
-            sa = saCopy;
-            saCopy = temp;
+    for(int i=n-1; i>=0; i--) {
+        memset(buckets, 0, fasta.alphabet.size * sizeof *buckets);
+        for(int j=0; j<n; j++) {
+            int charIndex = (saReader[j] + i) % n;
+            char c = x[charIndex];
+            int elemInBucket = buckets[c]++;
+            int saIndex = bucketsIndices[c] + elemInBucket;
+            saWriter[saIndex] = saReader[j];
         }
+        int *temp = saReader;
+        saReader = saWriter;
+        saWriter = temp;
     }
-    else {
-        for (int i = n - 1; i >= 0; i--) {
-            memset(buckets, 0, fasta.alphabet.size * sizeof *buckets);
-            for (int j = 0; j < n; j++) {
-                int charIndex = (sa[j] + i) % n;
-                char c = x[charIndex];
-                int elemInBucket = buckets[c]++;
-                int saIndex = bucketsIndices[c] + elemInBucket;
-                saCopy[saIndex] = sa[j];
-            }
-            int *temp = sa;
-            sa = saCopy;
-            saCopy = temp;
-        }
-    }
-    free(saCopy);
-    free(buckets);
 
-    return sa;
+    free(saWriter);
+    free(buckets);
+    free(x);
+
+    return saReader;
 }
 
 int **constructMultipleSARadix(struct FastaContainer *fastaContainer) {
