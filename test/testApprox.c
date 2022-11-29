@@ -402,7 +402,7 @@ MU_TEST(test_saAlg) {
     free(revSa);
 }
 
-MU_TEST(test_runAprroxExactMis) {
+MU_TEST(test_runApproxExactMis) {
     int pattern[3] = {2,1,4};
     int n = 12; // 214414413310
     int m = 3; // 214
@@ -476,8 +476,126 @@ MU_TEST(test_runAprroxExactMis) {
     mu_assert_string_eq("MMM", amc->AMs[0]->editString);
 }
 
+
+MU_TEST(test_nonConfirmed) {
+    /* This is a test written based on an old version of the code
+     * Since we assume that version is correct, we assume these tests can be used as regression tests
+    */
+    int pattern[10] = {3,4,1,1,2,4,1,3,2,1};
+    int n = 100;
+    int m = 10;
+
+    //D
+    int* C = calloc(n+1, sizeof *C);
+    int** RO = malloc(n*sizeof *RO);
+    struct Fasta* fasta = malloc(sizeof *fasta);
+    char * mal = malloc(sizeof(*mal)*n);
+    char* seq = "231212334124123412312234114212234123421342114233132222342134211324443124141141432112424432121352111";
+    strcpy(mal, seq);
+    update_fasta_by_sequence(&mal, fasta);
+
+    int* sa = constructSARadix(*fasta, 0);
+    int* revSa = constructSARadix(*fasta, 1);
+
+    int* rbwt = malloc(n*sizeof *rbwt); //bwt of 133144144120
+    int* bwt = malloc(n*sizeof *bwt); //bwt of 214414413310
+    for(int i=0; i<n; i++) {
+        rbwt[i] = revSa[i] ? fasta->fasta_sequence[n-revSa[i] - 1] : 0;
+        bwt[i] = sa[i] ? fasta->fasta_sequence[sa[i] - 1] : 0;
+    }
+
+    int expSa[100] = {99,98,97,96,81,61,74,24,42,2,90,19,28,16,4,12,33,9,69,82,48,62,57,38,92,72,75,25,43,77,95,80,60,41,89,27,3,56,37,91,50,51,20,29,52,0,17,45,5,21,13,30,53,34,10,70,83,85,64,1,18,68,47,79,88,49,63,46,6,22,14,31,7,58,39,54,35,93,73,23,15,11,32,8,71,76,59,40,26,55,36,44,84,67,78,87,66,86,65,94};
+    int expRevSa[100] = {99,0,16,55,36,1,23,73,6,94,17,8,70,56,37,60,41,2,96,79,50,29,21,24,26,86,82,65,74,89,98,15,93,7,69,95,78,28,85,81,64,88,68,77,45,46,47,34,48,18,9,53,71,13,57,38,61,42,3,35,5,59,40,49,97,92,84,80,63,67,76,44,52,91,51,19,10,30,54,22,72,20,25,14,27,87,33,12,58,39,83,62,66,75,43,90,32,11,31,4};
+    int expbwt[100] = {1,1,1,2,2,2,4,4,2,3,2,3,2,4,2,4,4,4,3,1,3,1,2,2,2,4,1,1,1,4,5,3,4,4,3,4,1,4,4,1,3,2,1,1,2,0,1,4,1,2,1,2,2,1,1,1,1,4,3,2,2,4,3,4,4,1,1,2,2,2,2,2,3,1,1,2,2,1,1,3,3,2,3,3,2,1,3,3,1,3,3,1,2,4,1,4,4,2,2,3,};
+    int expRbwt[100] = {2,0,2,4,3,1,4,4,3,2,1,2,2,1,1,3,3,1,2,2,3,2,4,1,4,2,2,2,1,2,3,4,3,1,2,1,2,4,3,3,3,4,3,3,3,2,2,4,2,1,1,3,1,4,1,1,1,1,1,2,5,4,4,2,1,3,4,1,4,4,4,4,3,4,1,2,2,1,2,1,2,3,1,2,1,1,4,4,2,2,1,2,1,1,2,1,4,3,3,2};
+
+    mu_assert_int_arr_eq(expSa, sa);
+    mu_assert_int_arr_eq(expRevSa, revSa);
+    mu_assert_int_arr_eq(expbwt, bwt);
+    mu_assert_int_arr_eq(expRbwt, rbwt);
+
+
+    makeOandC(rbwt, n, RO, C, 5);
+    struct Range* r = malloc(sizeof *r);
+    int* D = malloc(m*sizeof *D);
+    makeD(D, C, RO, pattern, n, m, r);
+
+    int expD[10] = {0,0,0,0,1,1,1,2,2,2};
+    mu_assert_int_arr_eq(expD, D);
+
+    //O and C
+    memset(C, 0, n*sizeof (*C));
+    int** O = malloc(n*sizeof *O);
+    makeOandC(bwt, n, O, C, 5);
+
+    int allowedEdits=0;
+    char* editString = malloc(m+allowedEdits+1);
+
+    struct ApproxMatchContainer* amc = runApprox(pattern, n, m, D, C, O, allowedEdits, editString, r);
+
+    mu_assert_int_eq(0, amc->amount);
+
+    allowedEdits = 1;
+    amc = runApprox(pattern, n, m, D, C, O, allowedEdits, editString, r);
+    mu_assert_int_eq(0, amc->amount);
+
+    allowedEdits = 2;
+    amc = runApprox(pattern, n, m, D, C, O, allowedEdits, editString, r);
+    mu_assert_int_eq(0, amc->amount);
+
+    allowedEdits = 3;
+    amc = runApprox(pattern, n, m, D, C, O, allowedEdits, editString, r);
+    mu_assert_int_eq(9, amc->amount);
+
+    int editStringLen3[9] = {10,10,10,11,11,11,11,10,10};
+    char* editStrings3[9] = {"IMIMMMIMMM","IMIMMMMIMM","MMIIMIMMMM","MMMDMMIMMMI","MMMDMMIMMMM","MMMDMMMIMMM","MMMDMMMMIMM","MMIMMMIMMM","MMIMMMMIMM"};
+    int rStart3[9] = {72,72,69,78,25,72,72,72,72};
+    int rEnd3[9] = {73,73,70,79,26,73,73,73,73};
+    for(int i=0; i<9; i++) {
+        mu_assert_int_eq(editStringLen3[i], amc->AMs[i]->editStringLen);
+        mu_assert_int_eq(rStart3[i], amc->AMs[i]->rStart);
+        mu_assert_int_eq(rEnd3[i], amc->AMs[i]->rEnd);
+        mu_assert_string_eq(editStrings3[i], amc->AMs[i]->editString);
+    }
+
+
+    allowedEdits = 4;
+    amc = runApprox(pattern, n, m, D, C, O, allowedEdits, editString, r);
+    mu_assert_int_eq(178, amc->amount);
+    int editStringLen4[178] = {10,10
+            ,10,10,11,11,11,11,10,10,11,11,10,10,10,10,10,11,10,10,11,10,10,10,10,10,10,11,11,10,10,10,11,11,10,10,10,10,11,11,10,10
+            ,10,12,12,10,10,10,10,10,10,10,12,12,12,12,12,12,11,11,10,10,10,10,10,10,10,11,11,10,10,10,10,10,10,10,11,11,11,11,11,13
+            ,13,12,10,10,10,10,11,11,11,11,12,11,11,11,11,11,12,12,11,11,11,11,11,12,12,12,11,11,12,10,10,12,10,10,12,10,10,10,10,10
+            ,10,10,11,10,10,10,10,10,11,11,11,11,12,11,11,12,11,11,11,11,11,10,10,11,11,10,10,10,10,10,10,10,10,11,10,10,11,10,10,10
+            ,10,10,11,11,10,10,10,11,11,11,11,10,10,10,10,10};
+    char* editStrings4[178] = {"IIIMMMIMMM","IIIMMMMIMM","IIMMMMIMMM","IIMMMMMIMM","IIMDMMMIMMM","IIMDMMMMIMM","IDMIMMMIMMM","IDMIMMMMIMM","IMIIMIMMMM","IMIIMMMMMM","IMIMIMDMMMM","IMIMDMIMMMM","IMIMMMMMMM","IMIMMMIMMM","IMIMMMMIMM","IMIMMIMMMM","IMIMMMIMMI","IMIMMMIMMDM","IMIMMMIMMM","IMIMMMMIMI","IMIMMMMIMDM","IMIMMMMIMM","IMIMMMMMIM","IMIMMMMMMM","IMMIMMIMMM","IMMIMMMIMM","IMMMMIMMMM","IMMMIMDMMMM","IMMMDMIMMMM","IMMMMMMMMM","IMMMMMIMMM","IMMMMMMIMM","IMMDMMIMMMI","IMMDMMIMMMM","IMMMIIMMMM","IMMMMMIIMM","IMMMMMIMMM","IMMMMMMIMM","IMMDMMMIMMM","IMMDMMMMIMM","MIIIMMIMMM","MIIIMMMIMM","MIIMMIMMMM","MIDMDMMMIMMM","MIDMDMMMMIMM","MIMIMIMMMM","MIMIIMIMMM","MIMIIMMIMM","MIMMMMIMIM","MIMMMMMIIM","MIMMMMMMMI","MIMMMMMMMM","MDMMDMMIMMMI","MDMMDMMIMMMM","MDIMDMMMIMMM","MDIMDMMMMIMM","MDDMIMMMIMMM","MDDMIMMMMIMM","MDMMMMMIMMM","MDMMMMMMIMM","MMMMMMIMIM","MMMMMMMIIM","MMMMMMMMMI","MMMMMMMMMM","MMIIIMMMMM","MMIIMIMMMI","MMIIMIMMMM","MMIIMDMIMMM","MMIIMDMMIMM","MMIIMMIMMM","MMIIMMMIMM","MMIIMMMMMM","MMIIMMMMMM","MMIMIIMMMM","MMIMMMIMMM","MMIMMMMIMM","MMDMMMIMMMI","MMDMMMIMMMM","MMDMIIMIMMM","MMDMIIMMIMM","MMDMMIMIIMM","MMDMMDMDMIMMM","MMDMMDMDMMIMM","MMDMMDMMMMMM","MMMIMIIMMI","MMMIMIIMMM","MMMIMIMIMI","MMMIMIMIMM","MMMIMDMMMMI","MMMIMDMMMMM","MMMIMMDMMMI","MMMIMMDMMMM","MMMDDMMMMMMM","MMMDMIMMMMI","MMMDMIMMMMM","MMMDMMIMMII","MMMDMMIMMIM","MMMDMMIMMMI","MMMDMMIMMMDI","MMMDMMIMMMDM","MMMDMMIMMMM","MMMDMMMIMMI","MMMDMMMIMMM","MMMDMMMMIMI","MMMDMMMMIMM","MMMDMMMMDMMI","MMMDMMMMDMMM","MMMDMDMMMMMM","MMMMDMIMMMI","MMMMDMIMMMM","MMMMDDMMMMMM","MMMMMMMMMI","MMMMMMMMMM","MMMMMDDMMMMM","MMMMMMIIMI","MMMMMMIIMM","MMMMMMDDMMMM","MMMIIIMMMM","MMMIMMIMMM","MMMIMMMIMM","MMMMIIIMMM","MMMMIIMIMM","MMMMIMIMMM","MMMMIMMIMM","MMMMMIMMDMM","MMMMMMMMMM","MMIMMMIMIM","MMIMMMMIIM","MMIMMMMMMI","MMIMMMMMMM","MMDMMMMIMMM","MMDMMMMMIMM","MMMDMMIMMMM","MMMDMMMIMMI","MMMDMMMIMMDM","MMMDMMMIMMM","MMMDMMMMIMI","MMMDMMMMIMDM","MMMDMMMMIMM","MMMDMMMMMIM","MMMDMMMMMMM","MMMMDMMIMMM","MMMMDMMMIMM","MIIMMMIMMM","MIIMMMMIMM","MMIMIMDMMMM","MMIMDMIMMMM","MMIMMMMMMM","MMIMMMIMMM","MMIMMMMIMM","MMMMMIMMMM","MIMMMMIMMM","MIMMMMMIMM","MMIMMIMMMM","MMIMMMIMMI","MMIMMMIMMDM","MMIMMMIMMM","MMIMMMMIMI","MMIMMMMIMDM","MMIMMMMIMM","MMIMMMMMIM","MMIMMMMMMM","MMMIMMIMMM","MMMIMMMIMM","MMMMIMDMMMM","MMMMDMIMMMM","MMMMMMMMMM","MMMMMMIMMM","MMMMMMMIMM","MIMDMMMIMMM","MIMDMMMMIMM","MDMIMMMIMMM","MDMIMMMMIMM","MMIIMMMMMM","MMMMIIMMMM","MMMMMMIIMM","MMMMMMIMMM","MMMMMMMIMM"};
+    int rStart4[178] = {72,72
+            ,72,72,72,72,72,72,69,63,69,69,69,70,70,72,83,68,72,83,68,72,72,68,72,72,69,69,69,69,70,70,78,25,73,73,72,72,72,72,72,72
+            ,69,72,72,69,70,70,61,61,93,96,78,25,72,72,72,72,72,72,61,61,93,96,69,79,69,71,71,69,69,75,71,69,71,71,78,25,71,71,75,71
+            ,71,71,85,26,85,26,78,25,78,25,63,78,25,6,78,78,25,84,25,78,25,78,25,84,55,63,78,25,63,78,25,63,92,56,63,69,71,71,69,69,
+                        71,71,74,74,61,61,93,96,72,72,72,83,68,72,83,68,72,72,68,72,72,72,72,69,69,69,70,70,69,72,72,72,83,68,72,83,68,72,72,68,
+                        72,72,69,69,69,70,70,72,72,72,72,63,73,73,72,72};
+    int rEnd4[178] = {73,73
+            ,73,73,73,73,73,73,70,64,70,70,70,71,71,73,84,69,73,84,69,73,73,69,73,73,70,70,70,70,71,71,79,26,74,74,73,73,73,73,73,73
+            ,70,73,73,70,71,71,62,62,94,97,79,26,73,73,73,73,73,73,62,62,94,97,70,80,70,72,72,70,70,77,72,70,72,72,79,26,72,72,77,72
+            ,72,72,86,27,86,27,79,26,79,26,64,79,26,7,79,79,26,85,26,79,26,79,26,85,56,64,79,26,64,79,26,64,93,57,64,70,72,72,70,70,
+                      72,72,75,75,62,62,94,97,73,73,73,84,69,73,84,69,73,73,69,73,73,73,73,70,70,70,71,71,70,73,73,73,84,69,73,84,69,73,73,69,
+                      73,73,70,70,70,71,71,73,73,73,73,64,74,74,73,73};
+
+
+    for(int i=0; i<178; i++) {
+        mu_assert_int_eq(editStringLen4[i], amc->AMs[i]->editStringLen);
+        mu_assert_int_eq(rStart4[i], amc->AMs[i]->rStart);
+        mu_assert_int_eq(rEnd4[i], amc->AMs[i]->rEnd);
+        mu_assert_string_eq(editStrings4[i], amc->AMs[i]->editString);
+    }
+}
+
+
+
+
 MU_TEST_SUITE(fasta_parser_test_suite) {
-    /*MU_RUN_TEST(test_makeDeq);
+    MU_RUN_TEST(test_makeDeq);
     MU_RUN_TEST(test_makeDnotEq);
     MU_RUN_TEST(test_makeD1Edit);
     MU_RUN_TEST(test_runApproxExactEqSmall);
@@ -489,8 +607,9 @@ MU_TEST_SUITE(fasta_parser_test_suite) {
     MU_RUN_TEST(test_runApproxAsym2);
     MU_RUN_TEST(test_runApprox2Edits);
     MU_RUN_TEST(test_saAlgSmall);
-    MU_RUN_TEST(test_saAlg);*/
-    MU_RUN_TEST(test_runAprroxExactMis);
+    MU_RUN_TEST(test_saAlg);
+    MU_RUN_TEST(test_runApproxExactMis);
+    MU_RUN_TEST(test_nonConfirmed);
 }
 
 
