@@ -142,11 +142,11 @@ Processor	AMD Ryzen 7 4800H with Radeon Graphics   2.90 GHz <br>
 Installed RAM	16.0 GB (15.4 GB usable) <br>
 Running Windows 11 <br>
 
-#### Version 1. 29/11
-First working version <br>
+#### Version 1.0 29/11
+First working version
 
 Preprocessing on long.fa: 22 minutes, 32 sec. <br>
-Search d=0, on long.fa and long.fastq: 13.659 sec. <br>
-Search d=1, on long.fa and long.fastq: 14.276 sec. <br>
-Search d=2, on long.fa and long.fastq: 59.95 sec. <br>
-Search d=3, on long.fa and long.fastq: 10 minutes, 30 sec.  <br>
+Search k=0, on long.fa and long.fastq: 13.659 sec. <br>
+Search k=1, on long.fa and long.fastq: 14.276 sec. <br>
+Search k=2, on long.fa and long.fastq: 59.95 sec. <br>
+Search k=3, on long.fa and long.fastq: 10 minutes, 30 sec.  <br>

@@ -22,7 +22,8 @@ struct Recur {
     char* editString;
     int editIndex;
     int editAmount;
-    struct Range* r;
+    int rStart;
+    int rEnd;
 };
 
 struct CommenRec {
@@ -33,14 +34,15 @@ struct CommenRec {
     int* D;
     int* C;
     int** O;
+    struct Range* r;
     struct ApproxMatchContainer* appCont;
 };
 
 void makeD(int* D, int* C, int** RO, const int* pattern, int n, int m, struct Range* r);
-void recurseM(int sym, struct Recur* rec, struct CommenRec* com);
-void recurseI(struct Recur* rec, struct CommenRec* com);
-void recurseD(int sym, struct Recur* rec, struct CommenRec* com);
-void recurseApprox(struct Recur* rec, struct CommenRec* com);
+void recurseM(int sym, struct Recur rec, struct CommenRec* com);
+void recurseI(struct Recur rec, struct CommenRec* com);
+void recurseD(int sym, struct Recur rec, struct CommenRec* com);
+void recurseApprox(struct Recur rec, struct CommenRec* com);
 struct ApproxMatchContainer* runApprox(int* pattern, int n, int m, int* D, int* C, int** O, int allowedEdits, char* editString, struct Range* r);
 void freeApproxMatchContainer(struct ApproxMatchContainer* approxMatchContainer);
 #endif
