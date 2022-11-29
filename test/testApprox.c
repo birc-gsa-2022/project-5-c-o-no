@@ -1,11 +1,8 @@
-#include <stdbool.h>
 #include "minunit.h"
 #include "testHelper.h"
 #include "../src/func/approx.h"
 #include "../src/func/sa.h"
-#include "../src/func/parsers/simple-fasta-parser.h"
 #include "../src/func/helper.h"
-#include "../src/func/debugger.h"
 
 MU_TEST(test_makeDeq) {
     int* C = calloc(5, sizeof *C);
