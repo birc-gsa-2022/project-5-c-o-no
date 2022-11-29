@@ -13,6 +13,7 @@ void makeOandC(const int* bwt, int n, int** O, int* C, int alphabetSize) {
     O[0] = firstRow;
     int* prevRow;
 
+
     for(int i=1; i<n; i++) {
         int* row = malloc(5*sizeof *row);
         prevRow = O[i-1];
@@ -25,12 +26,11 @@ void makeOandC(const int* bwt, int n, int** O, int* C, int alphabetSize) {
     }
 
     int accum = 0;
-    for(int i=0; i<6; i++) {
+    for(int i=0; i<5; i++) {
         int c = C[i];
         C[i] = accum;
         accum += c;
     }
-
 }
 
 int oLookUp(int** o, int searchChar, int i) {

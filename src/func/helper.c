@@ -181,7 +181,8 @@ void readFromProcessed(char *processString, char* readString, int allowedEdits) 
             while(*(processString++) != ',') {}
         }
         int **O = malloc(n*sizeof (*O));
-        int* C = calloc(alphabetSize, sizeof *C);
+        int* C = calloc(5, sizeof *C);
+
         makeOandC(bwt, n, O, C, alphabetSize);
 
         while(*(processString++) != '\n') {}
@@ -195,16 +196,19 @@ void readFromProcessed(char *processString, char* readString, int allowedEdits) 
 
         while(*(processString++) != '\n') {}
 
-        int *revbwt = malloc(n * sizeof *bwt);
+        int *revbwt = malloc(n * sizeof *revbwt);
         for(int i=0; i<n; i++) {
             revbwt[i] = atoi(processString);
             while(*(processString++) != ',') {}
         }
 
+
         int **RO = malloc(n*sizeof (*RO));
         //TODO don't remake C
-        int* rC = calloc(alphabetSize, sizeof *rC);
+        int* rC = calloc(5, sizeof *rC);
         makeOandC(revbwt, n, RO, rC, alphabetSize);
+
+
 
         while(*(processString++) != '\n') {}
 
@@ -253,9 +257,12 @@ void readFromProcessed(char *processString, char* readString, int allowedEdits) 
 
         for(int i=0; i<n; i++) {
             free(O[i]);
+            free(RO[i]);
         }
         free(O);
         free(C);
+        free(RO);
+        free(rC);
         free(sa);
     }
 }

@@ -133,6 +133,15 @@ struct ApproxMatchContainer* runApprox(int* pattern, int n, int m, int* D, int* 
     return appCont;
 }
 
-void freeApproxMatchContainer(struct ApproxMatchContainer* approxMatchContainer) {
-
+void freeApproxMatch(struct ApproxMatch* approxMatch) {
+    free(approxMatch->editString);
 }
+
+void freeApproxMatchContainer(struct ApproxMatchContainer* approxMatchContainer) {
+    for(int i=0; i<approxMatchContainer->amount; i++) {
+        freeApproxMatch(approxMatchContainer->AMs[i]);
+        free(approxMatchContainer->AMs[i]);
+    }
+}
+
+
