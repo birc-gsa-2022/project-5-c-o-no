@@ -105,19 +105,45 @@ Once you have implemented the `readmap` program (and tested it to the best of yo
 ## Algorithm
 
 *Which algorithm did you use for read mapping?*
+We used a bwt based approach. 
 
 ## Insights you may have had while implementing the algorithm
 
 ### Assumptions
+* The inputs are valid fasta and fastq files.
 * Sequences contain dna with only symbols from acgt. 
+* The number of allowed edits is small enough that we can allocate memory of that size.
 
 ## Problems encountered if any
+
+This project was more difficult than the four previous projects.
+The recursion was difficult to get a handle on. We started by making a fusion of recursion and explicit 
+stack-based programing. 
+Like in previous projects memory managing was a recurrent problem, but we are way better at handling them now. 
+In the recursion we had some issues, because we were (and still is of 29/11) passing references instead of values. 
+This meant, that we had to reset the value to their previous state, once a function call was popped from the stack.
 
 ## Validation
 
 *How did you validate that the algorithm works?*
 
+We made tests for sub elements used on the main function. These tests where explicit in what output we expected.
+We were able to test the approximation match with no allowed edits the most, since we could easily compare to the other projects. 
+Note that we also rely on the correctness of the implementation from the previous projects. 
+
 ## Running time
 
 *List experiments and results that illustrates the running time. Add figures by embedding them here, as you learned how to do in project 1.*
+
+#### 29/11
+First working version <br>
+The following is run on the following machine: <br>
+Lenovo Legion <br>
+Processor	AMD Ryzen 7 4800H with Radeon Graphics   2.90 GHz <br>
+Installed RAM	16.0 GB (15.4 GB usable) <br>
+Running Windows 11 <br>
+
+Preprocessing on long.fa: 22 minutes, 32 sec. <br>
+Search d=0, on long.fa and long.fastq: <br>
+Search d=1, on long.fa and long.fastq: <br>
 
