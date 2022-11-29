@@ -1,5 +1,5 @@
 #include <ctype.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include "simple-fasta-parser.h"
 
 

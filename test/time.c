@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include "../src/func/parsers/simple-fasta-parser.h"
 #include "../src/func/helper.h"
 #include "../src/func/sa.h"

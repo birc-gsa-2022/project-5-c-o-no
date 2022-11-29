@@ -1,11 +1,9 @@
+#include "func/helper.h"
+#include "func/parsers/simple-fasta-parser.h"
+#include "func/sa.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
-#include "func/sa.h"
-#include "func/helper.h"
-#include "func/parsers/simple-fasta-parser.h"
-
 
 static void print_usage(const char *progname)
 {

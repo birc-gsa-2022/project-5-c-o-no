@@ -1,12 +1,11 @@
 #include "helper.h"
-#include <stdio.h>
-#include <malloc.h>
-#include <string.h>
-#include <stdlib.h>
-#include "parsers/simple-fastq-parser.h"
-#include "parsers/simple-fasta-parser.h"
-#include "rotater.h"
 #include "approx.h"
+#include "parsers/simple-fasta-parser.h"
+#include "parsers/simple-fastq-parser.h"
+#include "rotater.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 void printIntArray(int * a, int len) {
     printf("[");

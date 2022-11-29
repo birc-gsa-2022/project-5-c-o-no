@@ -1,7 +1,7 @@
-#include <malloc.h>
 #include "rotater.h"
-#include <stdio.h>
 #include "helper.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 void makeOandC(const int* bwt, int n, int** O, int* C, int alphabetSize) {
 
