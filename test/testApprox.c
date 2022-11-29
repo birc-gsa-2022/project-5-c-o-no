@@ -5,13 +5,14 @@
 #include "../src/func/sa.h"
 #include "../src/func/parsers/simple-fasta-parser.h"
 #include "../src/func/helper.h"
+#include "../src/func/debugger.h"
 
 MU_TEST(test_makeDeq) {
     int* C = calloc(5, sizeof *C);
     int** RO = malloc(5*sizeof *RO);
     int nX = 5;
     int bwt[5] = {1,2,2,1,0}; //bwt of 21210
-    makeOandC(bwt, nX, RO, C, 5);
+    makeOandC(bwt, nX, RO, C);
     int pattern[4] = {1,2,1,2};
     int m = 4;
     struct Range* r = malloc(sizeof *r);
@@ -26,7 +27,7 @@ MU_TEST(test_makeDnotEq) {
     int** RO = malloc(5*sizeof *RO);
     int nX = 5;
     int bwt[5] = {1,2,2,1,0}; //bwt of 21210
-    makeOandC(bwt, nX, RO, C, 5);
+    makeOandC(bwt, nX, RO, C);
 
     int pattern[4] = {3,3,3,3};
     int m = 4;
@@ -42,7 +43,7 @@ MU_TEST(test_makeD1Edit) {
     int** RO = malloc(7*sizeof *RO);
     int nX = 7;
     int bwt[7] = {1,2,2,1,2,0,1}; //bwt of baabba0
-    makeOandC(bwt, nX, RO, C, 5);
+    makeOandC(bwt, nX, RO, C);
     int pattern[5] = {1,2,1,2,1};
     int m = 5;
     struct Range* r = malloc(sizeof *r);
@@ -61,7 +62,7 @@ MU_TEST(test_runApproxExactEqSmall) {
     int* C = calloc(3, sizeof *C);
     int** RO = malloc(4*sizeof *RO);
     int rbwt[3] = {1,1,0}; //bwt of 110
-    makeOandC(rbwt, n, RO, C, 3);
+    makeOandC(rbwt, n, RO, C);
     struct Range* r = malloc(sizeof *r);
     int* D = malloc(1*sizeof *D);
     makeD(D, C, RO, pattern, n, m, r);
@@ -70,7 +71,7 @@ MU_TEST(test_runApproxExactEqSmall) {
     memset(C, 0, 3);
     int** O = malloc(4*sizeof *RO);
     int bwt[3] = {1,1,0}; //bwt of 110
-    makeOandC(bwt, n, O, C, 3);
+    makeOandC(bwt, n, O, C);
 
     char* editString = malloc(m+1);
 
@@ -93,7 +94,7 @@ MU_TEST(test_runApproxExactEq) {
     int* C = calloc(5, sizeof *C);
     int** RO = malloc(6*sizeof *RO);
     int rbwt[5] = {1,2,2,1,0}; //bwt of 21210
-    makeOandC(rbwt, n, RO, C, 5);
+    makeOandC(rbwt, n, RO, C);
     struct Range* r = malloc(sizeof *r);
     int* D = malloc(2*sizeof *D);
     makeD(D, C, RO, pattern, n, m, r);
@@ -102,7 +103,7 @@ MU_TEST(test_runApproxExactEq) {
     memset(C, 0, 5);
     int** O = malloc(6*sizeof *RO);
     int bwt[5] = {2,2,0,1,1}; //bwt of 12120
-    makeOandC(bwt, n, O, C, 5);
+    makeOandC(bwt, n, O, C);
 
     char* editString = malloc(m+1);
 
@@ -124,7 +125,7 @@ MU_TEST(test_runApproxDiff) {
     int* C = calloc(5, sizeof *C);
     int** RO = malloc(4*sizeof *RO);
     int rbwt[3] = {2,2,0}; //bwt of 220
-    makeOandC(rbwt, n, RO, C, 3);
+    makeOandC(rbwt, n, RO, C);
     struct Range* r = malloc(sizeof *r);
     int* D = malloc(1*sizeof *D);
     makeD(D, C, RO, pattern, n, m, r);
@@ -133,7 +134,7 @@ MU_TEST(test_runApproxDiff) {
     memset(C, 0, 5*sizeof (*C));
     int** O = malloc(4*sizeof *RO);
     int bwt[3] = {2,2,0}; //bwt of 220
-    makeOandC(bwt, n, O, C, 3);
+    makeOandC(bwt, n, O, C);
 
     int k=1;
     char* editString = malloc(m+k+1);
@@ -161,7 +162,7 @@ MU_TEST(test_runApproxForceD) {
     int* C = calloc(n+1, sizeof *C);
     int** RO = malloc(n*sizeof *RO);
     int rbwt[6] = {1,1,2,0,1,1}; //bwt of 112110
-    makeOandC(rbwt, n, RO, C, 5);
+    makeOandC(rbwt, n, RO, C);
     struct Range* r = malloc(sizeof *r);
     int* D = malloc(m*sizeof *D);
     makeD(D, C, RO, pattern, n, m, r);
@@ -170,7 +171,7 @@ MU_TEST(test_runApproxForceD) {
     memset(C, 0, n*sizeof (*C));
     int** O = malloc(n*sizeof *RO);
     int bwt[6] = {1,1,2,0,1,1}; //bwt of 112110
-    makeOandC(bwt, n, O, C, 5);
+    makeOandC(bwt, n, O, C);
 
     int allowedEdits=1;
     char* editString = malloc(m+allowedEdits+1);
@@ -191,7 +192,7 @@ MU_TEST(test_runApprox2EditsSmall) {
     int* C = calloc(n+1, sizeof *C);
     int** RO = malloc(n*sizeof *RO);
     int rbwt[3] = {2,2,0}; //bwt of 220
-    makeOandC(rbwt, n, RO, C, 5);
+    makeOandC(rbwt, n, RO, C);
     struct Range* r = malloc(sizeof *r);
     int* D = malloc(m*sizeof *D);
     makeD(D, C, RO, pattern, n, m, r);
@@ -200,7 +201,7 @@ MU_TEST(test_runApprox2EditsSmall) {
     memset(C, 0, n*sizeof (*C));
     int** O = malloc(n*sizeof *RO);
     int bwt[3] = {2,2,0}; //bwt of 220
-    makeOandC(bwt, n, O, C, 5);
+    makeOandC(bwt, n, O, C);
 
     int allowedEdits=2;
     char* editString = malloc(m+allowedEdits+1);
@@ -228,7 +229,7 @@ MU_TEST(test_runApproxAsym) {
     int* C = calloc(n+1, sizeof *C);
     int** RO = malloc(n*sizeof *RO);
     int rbwt[4] = {1,2,4,0}; //bwt of 4210
-    makeOandC(rbwt, n, RO, C, 5);
+    makeOandC(rbwt, n, RO, C);
     struct Range* r = malloc(sizeof *r);
     int* D = malloc(m*sizeof *D);
     makeD(D, C, RO, pattern, n, m, r);
@@ -237,7 +238,7 @@ MU_TEST(test_runApproxAsym) {
     memset(C, 0, n*sizeof (*C));
     int** O = malloc(n*sizeof *RO);
     int bwt[4] = {4,0,1,2}; //bwt of 1240
-    makeOandC(bwt, n, O, C, 5);
+    makeOandC(bwt, n, O, C);
 
     int allowedEdits=1;
     char* editString = malloc(m+allowedEdits+1);
@@ -261,7 +262,7 @@ MU_TEST(test_runApproxAsym2) {
     int* C = calloc(n+1, sizeof *C);
     int** RO = malloc(n*sizeof *RO);
     int rbwt[8] = {1,2,3,2,1,0,4,1}; //bwt of 21431210
-    makeOandC(rbwt, n, RO, C, 5);
+    makeOandC(rbwt, n, RO, C);
     struct Range* r = malloc(sizeof *r);
     int* D = malloc(m*sizeof *D);
     makeD(D, C, RO, pattern, n, m, r);
@@ -270,7 +271,7 @@ MU_TEST(test_runApproxAsym2) {
     memset(C, 0, n*sizeof (*C));
     int** O = malloc(n*sizeof *RO);
     int bwt[8] = {2,4,0,2,1,1,1,3}; //bwt of 12134120
-    makeOandC(bwt, n, O, C, 5);
+    makeOandC(bwt, n, O, C);
 
     int allowedEdits=1;
     char* editString = malloc(m+allowedEdits+1);
@@ -294,7 +295,7 @@ MU_TEST(test_runApprox2Edits) {
     int* C = calloc(n+1, sizeof *C);
     int** RO = malloc(n*sizeof *RO);
     int rbwt[7] = {3,4,0,4,1,2,1}; //bwt of 1424130
-    makeOandC(rbwt, n, RO, C, 5);
+    makeOandC(rbwt, n, RO, C);
     struct Range* r = malloc(sizeof *r);
     int* D = malloc(m*sizeof *D);
     makeD(D, C, RO, pattern, n, m, r);
@@ -303,7 +304,7 @@ MU_TEST(test_runApprox2Edits) {
     memset(C, 0, n*sizeof (*C));
     int** O = malloc(n*sizeof *O);
     int bwt[7] = {1,4,3,4,0,2,1}; //bwt of 3142410
-    makeOandC(bwt, n, O, C, 5);
+    makeOandC(bwt, n, O, C);
 
     int allowedEdits=2;
     char* editString = malloc(m+allowedEdits+1);
@@ -453,7 +454,7 @@ MU_TEST(test_runApproxExactMis) {
     mu_assert_int_eq(2, *rbwt);
     mu_assert_int_arr_eq(expRbwt, rbwt);
 
-    makeOandC(rbwt, n, RO, C, 5);
+    makeOandC(rbwt, n, RO, C);
     struct Range* r = malloc(sizeof *r);
     int* D = malloc(m*sizeof *D);
     makeD(D, C, RO, pattern, n, m, r);
@@ -464,7 +465,7 @@ MU_TEST(test_runApproxExactMis) {
     //O and C
     memset(C, 0, n*sizeof (*C));
     int** O = malloc(n*sizeof *O);
-    makeOandC(bwt, n, O, C, 5);
+    makeOandC(bwt, n, O, C);
 
     int allowedEdits=0;
     char* editString = malloc(m+allowedEdits+1);
@@ -490,24 +491,28 @@ MU_TEST(test_nonConfirmed) {
     int** RO = malloc(n*sizeof *RO);
     struct Fasta* fasta = malloc(sizeof *fasta);
     char * mal = malloc(sizeof(*mal)*n);
-    char* seq = "231212334124123412312234114212234123421342114233132222342134211324443124141141432112424432121352111";
+    char* seq = "231212334124123412312234114212234123421342114233132222342134211324443124141141432112424432121322111";
     strcpy(mal, seq);
     update_fasta_by_sequence(&mal, fasta);
 
     int* sa = constructSARadix(*fasta, 0);
     int* revSa = constructSARadix(*fasta, 1);
 
-    int* rbwt = malloc(n*sizeof *rbwt); //bwt of 133144144120
-    int* bwt = malloc(n*sizeof *bwt); //bwt of 214414413310
+    int* rbwt = malloc(n*sizeof *rbwt);
+    int* bwt = malloc(n*sizeof *bwt);
     for(int i=0; i<n; i++) {
         rbwt[i] = revSa[i] ? fasta->fasta_sequence[n-revSa[i] - 1] : 0;
         bwt[i] = sa[i] ? fasta->fasta_sequence[sa[i] - 1] : 0;
     }
 
-    int expSa[100] = {99,98,97,96,81,61,74,24,42,2,90,19,28,16,4,12,33,9,69,82,48,62,57,38,92,72,75,25,43,77,95,80,60,41,89,27,3,56,37,91,50,51,20,29,52,0,17,45,5,21,13,30,53,34,10,70,83,85,64,1,18,68,47,79,88,49,63,46,6,22,14,31,7,58,39,54,35,93,73,23,15,11,32,8,71,76,59,40,26,55,36,44,84,67,78,87,66,86,65,94};
-    int expRevSa[100] = {99,0,16,55,36,1,23,73,6,94,17,8,70,56,37,60,41,2,96,79,50,29,21,24,26,86,82,65,74,89,98,15,93,7,69,95,78,28,85,81,64,88,68,77,45,46,47,34,48,18,9,53,71,13,57,38,61,42,3,35,5,59,40,49,97,92,84,80,63,67,76,44,52,91,51,19,10,30,54,22,72,20,25,14,27,87,33,12,58,39,83,62,66,75,43,90,32,11,31,4};
-    int expbwt[100] = {1,1,1,2,2,2,4,4,2,3,2,3,2,4,2,4,4,4,3,1,3,1,2,2,2,4,1,1,1,4,5,3,4,4,3,4,1,4,4,1,3,2,1,1,2,0,1,4,1,2,1,2,2,1,1,1,1,4,3,2,2,4,3,4,4,1,1,2,2,2,2,2,3,1,1,2,2,1,1,3,3,2,3,3,2,1,3,3,1,3,3,1,2,4,1,4,4,2,2,3,};
-    int expRbwt[100] = {2,0,2,4,3,1,4,4,3,2,1,2,2,1,1,3,3,1,2,2,3,2,4,1,4,2,2,2,1,2,3,4,3,1,2,1,2,4,3,3,3,4,3,3,3,2,2,4,2,1,1,3,1,4,1,1,1,1,1,2,5,4,4,2,1,3,4,1,4,4,4,4,3,4,1,2,2,1,2,1,2,3,1,2,1,1,4,4,2,2,1,2,1,1,2,1,4,3,3,2};
+    int expSa[100] = {99,98,97,96,81,61,74,24,42,2,90,19,28,16,4,12,33,9,69,82,92,48,62,57,38,72,75,25,43,77,95,80,60,41,89,27,3,91,56,37,94,50,51,20,29,52,0,17,45,5,21,13,30,53,34,10,70,83,85,64,1,18,68,47,79,88,93,49,63,46,6,22,14,
+            31,7,58,39,54,35,73,23,15,11,32,8,71,76,59,40,26,55,36,44,84,67,78,87,66,86,65};
+    int expRevSa[100] = {99,0,1,16,55,36,23,73,6,94,2,17,8,70,56,37,60,41,96,79,50,29,21,24,26,86,82,65,74,89,98,15,93,7,69,95,78,28,85,81,64,88,68,77,45,46,3,47,34,4,48,18,9,53,71,13,57,38,61,42,35,5,59,40,49,97,92,84,80,63,67,76,44,52,91,51,19,10,30,54,22
+            ,72,20,25,14,27,87,33,12,58,39,83,62,66,75,43,90,32,11,31};
+    int expbwt[100] = {1,1,1,2,2,2,4,4,2,3,2,3,2,4,2,4,4,4,3,1,2,3,1,2,2,4,1,1,1,4,2,3,4,4,3,4,1,1,4,4,3,3,2,1,1,2,0,1,4,1,2,1,2,2,1,1,1,1
+            ,4,3,2,2,4,3,4,4,1,1,1,2,2,2,2,2,3,1,1,2,2,1,3,3,2,3,3,2,1,3,3,1,3,3,1,2,4,1,4,4,2,2};
+    int expRbwt[100] = {2,0,1,2,4,3,4,4,3,2,1,1,2,2,1,1,3,3,2,2,3,2,4,1,4,2,2,2,1,2,3,4,3,1,2,1,2,4,3,3,3,4,3,3,3,2,1,2,4,2,2,1,1,3,1,4,1,
+                        1,1,1,2,2,4,4,2,1,3,4,1,4,4,4,4,3,4,1,2,2,1,2,1,2,3,1,2,1,1,4,4,2,2,1,2,1,1,2,1,4,3,3};
 
     mu_assert_int_arr_eq(expSa, sa);
     mu_assert_int_arr_eq(expRevSa, revSa);
@@ -515,7 +520,7 @@ MU_TEST(test_nonConfirmed) {
     mu_assert_int_arr_eq(expRbwt, rbwt);
 
 
-    makeOandC(rbwt, n, RO, C, 5);
+    makeOandC(rbwt, n, RO, C);
     struct Range* r = malloc(sizeof *r);
     int* D = malloc(m*sizeof *D);
     makeD(D, C, RO, pattern, n, m, r);
@@ -526,7 +531,7 @@ MU_TEST(test_nonConfirmed) {
     //O and C
     memset(C, 0, n*sizeof (*C));
     int** O = malloc(n*sizeof *O);
-    makeOandC(bwt, n, O, C, 5);
+    makeOandC(bwt, n, O, C);
 
     int allowedEdits=0;
     char* editString = malloc(m+allowedEdits+1);
@@ -538,7 +543,6 @@ MU_TEST(test_nonConfirmed) {
     allowedEdits = 1;
     amc = runApprox(pattern, n, m, D, C, O, allowedEdits, editString, r);
     mu_assert_int_eq(0, amc->amount);
-
     allowedEdits = 2;
     amc = runApprox(pattern, n, m, D, C, O, allowedEdits, editString, r);
     mu_assert_int_eq(0, amc->amount);
@@ -549,8 +553,11 @@ MU_TEST(test_nonConfirmed) {
 
     int editStringLen3[9] = {10,10,10,11,11,11,11,10,10};
     char* editStrings3[9] = {"IMIMMMIMMM","IMIMMMMIMM","MMIIMIMMMM","MMMDMMIMMMI","MMMDMMIMMMM","MMMDMMMIMMM","MMMDMMMMIMM","MMIMMMIMMM","MMIMMMMIMM"};
-    int rStart3[9] = {72,72,69,78,25,72,72,72,72};
-    int rEnd3[9] = {73,73,70,79,26,73,73,73,73};
+    int rStart3[9] = {74,74,71,79,25,74,74,74,74};
+    int rEnd3[9] = {75,75,72,80,26,75,75,75,75};
+
+
+
     for(int i=0; i<9; i++) {
         mu_assert_int_eq(editStringLen3[i], amc->AMs[i]->editStringLen);
         mu_assert_int_eq(rStart3[i], amc->AMs[i]->rStart);
@@ -559,31 +566,32 @@ MU_TEST(test_nonConfirmed) {
     }
 
 
+
     allowedEdits = 4;
     amc = runApprox(pattern, n, m, D, C, O, allowedEdits, editString, r);
-    mu_assert_int_eq(178, amc->amount);
-    int editStringLen4[178] = {10,10
-            ,10,10,11,11,11,11,10,10,11,11,10,10,10,10,10,11,10,10,11,10,10,10,10,10,10,11,11,10,10,10,11,11,10,10,10,10,11,11,10,10
-            ,10,12,12,10,10,10,10,10,10,10,12,12,12,12,12,12,11,11,10,10,10,10,10,10,10,11,11,10,10,10,10,10,10,10,11,11,11,11,11,13
-            ,13,12,10,10,10,10,11,11,11,11,12,11,11,11,11,11,12,12,11,11,11,11,11,12,12,12,11,11,12,10,10,12,10,10,12,10,10,10,10,10
-            ,10,10,11,10,10,10,10,10,11,11,11,11,12,11,11,12,11,11,11,11,11,10,10,11,11,10,10,10,10,10,10,10,10,11,10,10,11,10,10,10
-            ,10,10,11,11,10,10,10,11,11,11,11,10,10,10,10,10};
-    char* editStrings4[178] = {"IIIMMMIMMM","IIIMMMMIMM","IIMMMMIMMM","IIMMMMMIMM","IIMDMMMIMMM","IIMDMMMMIMM","IDMIMMMIMMM","IDMIMMMMIMM","IMIIMIMMMM","IMIIMMMMMM","IMIMIMDMMMM","IMIMDMIMMMM","IMIMMMMMMM","IMIMMMIMMM","IMIMMMMIMM","IMIMMIMMMM","IMIMMMIMMI","IMIMMMIMMDM","IMIMMMIMMM","IMIMMMMIMI","IMIMMMMIMDM","IMIMMMMIMM","IMIMMMMMIM","IMIMMMMMMM","IMMIMMIMMM","IMMIMMMIMM","IMMMMIMMMM","IMMMIMDMMMM","IMMMDMIMMMM","IMMMMMMMMM","IMMMMMIMMM","IMMMMMMIMM","IMMDMMIMMMI","IMMDMMIMMMM","IMMMIIMMMM","IMMMMMIIMM","IMMMMMIMMM","IMMMMMMIMM","IMMDMMMIMMM","IMMDMMMMIMM","MIIIMMIMMM","MIIIMMMIMM","MIIMMIMMMM","MIDMDMMMIMMM","MIDMDMMMMIMM","MIMIMIMMMM","MIMIIMIMMM","MIMIIMMIMM","MIMMMMIMIM","MIMMMMMIIM","MIMMMMMMMI","MIMMMMMMMM","MDMMDMMIMMMI","MDMMDMMIMMMM","MDIMDMMMIMMM","MDIMDMMMMIMM","MDDMIMMMIMMM","MDDMIMMMMIMM","MDMMMMMIMMM","MDMMMMMMIMM","MMMMMMIMIM","MMMMMMMIIM","MMMMMMMMMI","MMMMMMMMMM","MMIIIMMMMM","MMIIMIMMMI","MMIIMIMMMM","MMIIMDMIMMM","MMIIMDMMIMM","MMIIMMIMMM","MMIIMMMIMM","MMIIMMMMMM","MMIIMMMMMM","MMIMIIMMMM","MMIMMMIMMM","MMIMMMMIMM","MMDMMMIMMMI","MMDMMMIMMMM","MMDMIIMIMMM","MMDMIIMMIMM","MMDMMIMIIMM","MMDMMDMDMIMMM","MMDMMDMDMMIMM","MMDMMDMMMMMM","MMMIMIIMMI","MMMIMIIMMM","MMMIMIMIMI","MMMIMIMIMM","MMMIMDMMMMI","MMMIMDMMMMM","MMMIMMDMMMI","MMMIMMDMMMM","MMMDDMMMMMMM","MMMDMIMMMMI","MMMDMIMMMMM","MMMDMMIMMII","MMMDMMIMMIM","MMMDMMIMMMI","MMMDMMIMMMDI","MMMDMMIMMMDM","MMMDMMIMMMM","MMMDMMMIMMI","MMMDMMMIMMM","MMMDMMMMIMI","MMMDMMMMIMM","MMMDMMMMDMMI","MMMDMMMMDMMM","MMMDMDMMMMMM","MMMMDMIMMMI","MMMMDMIMMMM","MMMMDDMMMMMM","MMMMMMMMMI","MMMMMMMMMM","MMMMMDDMMMMM","MMMMMMIIMI","MMMMMMIIMM","MMMMMMDDMMMM","MMMIIIMMMM","MMMIMMIMMM","MMMIMMMIMM","MMMMIIIMMM","MMMMIIMIMM","MMMMIMIMMM","MMMMIMMIMM","MMMMMIMMDMM","MMMMMMMMMM","MMIMMMIMIM","MMIMMMMIIM","MMIMMMMMMI","MMIMMMMMMM","MMDMMMMIMMM","MMDMMMMMIMM","MMMDMMIMMMM","MMMDMMMIMMI","MMMDMMMIMMDM","MMMDMMMIMMM","MMMDMMMMIMI","MMMDMMMMIMDM","MMMDMMMMIMM","MMMDMMMMMIM","MMMDMMMMMMM","MMMMDMMIMMM","MMMMDMMMIMM","MIIMMMIMMM","MIIMMMMIMM","MMIMIMDMMMM","MMIMDMIMMMM","MMIMMMMMMM","MMIMMMIMMM","MMIMMMMIMM","MMMMMIMMMM","MIMMMMIMMM","MIMMMMMIMM","MMIMMIMMMM","MMIMMMIMMI","MMIMMMIMMDM","MMIMMMIMMM","MMIMMMMIMI","MMIMMMMIMDM","MMIMMMMIMM","MMIMMMMMIM","MMIMMMMMMM","MMMIMMIMMM","MMMIMMMIMM","MMMMIMDMMMM","MMMMDMIMMMM","MMMMMMMMMM","MMMMMMIMMM","MMMMMMMIMM","MIMDMMMIMMM","MIMDMMMMIMM","MDMIMMMIMMM","MDMIMMMMIMM","MMIIMMMMMM","MMMMIIMMMM","MMMMMMIIMM","MMMMMMIMMM","MMMMMMMIMM"};
-    int rStart4[178] = {72,72
-            ,72,72,72,72,72,72,69,63,69,69,69,70,70,72,83,68,72,83,68,72,72,68,72,72,69,69,69,69,70,70,78,25,73,73,72,72,72,72,72,72
-            ,69,72,72,69,70,70,61,61,93,96,78,25,72,72,72,72,72,72,61,61,93,96,69,79,69,71,71,69,69,75,71,69,71,71,78,25,71,71,75,71
-            ,71,71,85,26,85,26,78,25,78,25,63,78,25,6,78,78,25,84,25,78,25,78,25,84,55,63,78,25,63,78,25,63,92,56,63,69,71,71,69,69,
-                        71,71,74,74,61,61,93,96,72,72,72,83,68,72,83,68,72,72,68,72,72,72,72,69,69,69,70,70,69,72,72,72,83,68,72,83,68,72,72,68,
-                        72,72,69,69,69,70,70,72,72,72,72,63,73,73,72,72};
-    int rEnd4[178] = {73,73
-            ,73,73,73,73,73,73,70,64,70,70,70,71,71,73,84,69,73,84,69,73,73,69,73,73,70,70,70,70,71,71,79,26,74,74,73,73,73,73,73,73
-            ,70,73,73,70,71,71,62,62,94,97,79,26,73,73,73,73,73,73,62,62,94,97,70,80,70,72,72,70,70,77,72,70,72,72,79,26,72,72,77,72
-            ,72,72,86,27,86,27,79,26,79,26,64,79,26,7,79,79,26,85,26,79,26,79,26,85,56,64,79,26,64,79,26,64,93,57,64,70,72,72,70,70,
-                      72,72,75,75,62,62,94,97,73,73,73,84,69,73,84,69,73,73,69,73,73,73,73,70,70,70,71,71,70,73,73,73,84,69,73,84,69,73,73,69,
-                      73,73,70,70,70,71,71,73,73,73,73,64,74,74,73,73};
+    mu_assert_int_eq(190, amc->amount);
+    int editStringLen4[190] = {10,10
+            ,10,10,11,11,11,11,10,10,11,11,10,10,10,10,10,11,10,10,11,10,10,10,10,10,10,11,11,10,10,10,11,11,10,10,10,10,10,10,10,11
+            ,11,10,10,10,12,12,10,10,10,10,10,10,10,12,12,11,11,11,12,12,12,12,11,11,10,10,10,10,10,10,10,11,11,10,10,10,10,10,10,10
+            ,11,11,11,11,11,11,11,11,13,13,12,10,10,10,10,11,11,11,11,12,11,11,11,11,11,12,12,11,11,11,11,11,12,12,12,11,11,12,10,10
+            ,12,10,10,12,10,10,10,10,10,10,10,11,10,10,10,10,10,11,11,11,11,12,11,11,12,11,11,11,11,11,10,10,11,11,10,10,10,10,10,10
+            ,10,10,10,10,10,11,10,10,11,10,10,10,10,10,11,11,10,10,10,11,11,11,11,10,10,10,10,10};
+    char* editStrings4[190] = {"IIIMMMIMMM","IIIMMMMIMM","IIMMMMIMMM","IIMMMMMIMM","IIMDMMMIMMM","IIMDMMMMIMM","IDMIMMMIMMM","IDMIMMMMIMM","IMIIMIMMMM","IMIIMMMMMM","IMIMIMDMMMM","IMIMDMIMMMM","IMIMMMMMMM","IMIMMMIMMM","IMIMMMMIMM","IMIMMIMMMM","IMIMMMIMMI","IMIMMMIMMDM","IMIMMMIMMM","IMIMMMMIMI","IMIMMMMIMDM","IMIMMMMIMM","IMIMMMMMIM","IMIMMMMMMM","IMMIMMIMMM","IMMIMMMIMM","IMMMMIMMMM","IMMMIMDMMMM","IMMMDMIMMMM","IMMMMMMMMM","IMMMMMIMMM","IMMMMMMIMM","IMMDMMIMMMI","IMMDMMIMMMM","IMMMIIMMMM","IMMMIMIMMM","IMMMIMMIMM","IMMMIMMMIM","IMMMMMIIMM","IMMMMMIMMM","IMMMMMMIMM","IMMDMMMIMMM","IMMDMMMMIMM","MIIIMMIMMM","MIIIMMMIMM","MIIMMIMMMM","MIDMDMMMIMMM","MIDMDMMMMIMM","MIMIMIMMMM","MIMIIMIMMM","MIMIIMMIMM","MIMMMMIMIM","MIMMMMMIIM","MIMMMMMMMI","MIMMMMMMMM","MDMMDMMIMMMI","MDMMDMMIMMMM","MDMMMIMIMMM","MDMMMIMMIMM","MDMMMIMMMIM","MDIMDMMMIMMM","MDIMDMMMMIMM","MDDMIMMMIMMM","MDDMIMMMMIMM","MDMMMMMIMMM","MDMMMMMMIMM","MMMMMMIMIM","MMMMMMMIIM","MMMMMMMMMI","MMMMMMMMMM","MMIIIMMMMM","MMIIMIMMMI","MMIIMIMMMM","MMIIMDMIMMM","MMIIMDMMIMM","MMIIMMIMMM","MMIIMMMIMM","MMIIMMMMMM","MMIIMMMMMM","MMIMIIMMMM","MMIMMMIMMM","MMIMMMMIMM","MMDMMIMIMMM","MMDMMIMMIMM","MMDMMIMMMIM","MMDMMMIMMMI","MMDMMMIMMMM","MMDMIIMIMMM","MMDMIIMMIMM","MMDMMIMIIMM","MMDMMDMDMIMMM","MMDMMDMDMMIMM","MMDMMDMMMMMM","MMMIMIIMMI","MMMIMIIMMM","MMMIMIMIMI","MMMIMIMIMM","MMMIMDMMMMI","MMMIMDMMMMM","MMMIMMDMMMI","MMMIMMDMMMM","MMMDDMMMMMMM","MMMDMIMMMMI","MMMDMIMMMMM","MMMDMMIMMII","MMMDMMIMMIM","MMMDMMIMMMI","MMMDMMIMMMDI","MMMDMMIMMMDM","MMMDMMIMMMM","MMMDMMMIMMI","MMMDMMMIMMM","MMMDMMMMIMI","MMMDMMMMIMM","MMMDMMMMDMMI","MMMDMMMMDMMM","MMMDMDMMMMMM","MMMMDMIMMMI","MMMMDMIMMMM","MMMMDDMMMMMM","MMMMMMMMMI","MMMMMMMMMM","MMMMMDDMMMMM","MMMMMMIIMI","MMMMMMIIMM","MMMMMMDDMMMM","MMMIIIMMMM","MMMIMMIMMM","MMMIMMMIMM","MMMMIIIMMM","MMMMIIMIMM","MMMMIMIMMM","MMMMIMMIMM","MMMMMIMMDMM","MMMMMMMMMM","MMIMMMIMIM","MMIMMMMIIM","MMIMMMMMMI","MMIMMMMMMM","MMDMMMMIMMM","MMDMMMMMIMM","MMMDMMIMMMM","MMMDMMMIMMI","MMMDMMMIMMDM","MMMDMMMIMMM","MMMDMMMMIMI","MMMDMMMMIMDM","MMMDMMMMIMM","MMMDMMMMMIM","MMMDMMMMMMM","MMMMDMMIMMM","MMMMDMMMIMM","MIIMMMIMMM","MIIMMMMIMM","MMIMIMDMMMM","MMIMDMIMMMM","MMIMMMMMMM","MMIMMMIMMM","MMIMMMMIMM","MMMMMIMMMM","MMMMIMIMMM","MMMMIMMIMM","MMMMIMMMIM","MIMMMMIMMM","MIMMMMMIMM","MMIMMIMMMM","MMIMMMIMMI","MMIMMMIMMDM","MMIMMMIMMM","MMIMMMMIMI","MMIMMMMIMDM","MMIMMMMIMM","MMIMMMMMIM","MMIMMMMMMM","MMMIMMIMMM","MMMIMMMIMM","MMMMIMDMMMM","MMMMDMIMMMM","MMMMMMMMMM","MMMMMMIMMM","MMMMMMMIMM","MIMDMMMIMMM","MIMDMMMMIMM","MDMIMMMIMMM","MDMIMMMMIMM","MMIIMMMMMM","MMMMIIMMMM","MMMMMMIIMM","MMMMMMIMMM","MMMMMMMIMM"
+    };
+    int rStart4[190] = {74,74
+            ,74,74,74,74,74,74,71,64,71,71,71,72,72,74,84,70,74,84,70,74,74,70,74,74,71,71,71,71,72,72,79,25,75,65,65,65,75,74,74,74
+            ,74,74,74,71,74,74,71,72,72,62,62,94,97,79,25,65,65,65,74,74,74,74,74,74,62,62,94,97,71,80,71,73,73,71,71,77,73,71,73,73
+            ,65,65,65,79,25,73,73,77,73,73,73,86,26,86,26,79,25,79,25,64,79,25,6,79,79,25,85,25,79,25,79,25,85,56,64,79,25,64,79,25,
+                        64,93,57,64,71,73,73,71,71,73,73,76,76,62,62,94,97,74,74,74,84,70,74,84,70,74,74,70,74,74,74,74,71,71,71,72,72,71,65,65,
+                        65,74,74,74,84,70,74,84,70,74,74,70,74,74,71,71,71,72,72,74,74,74,74,64,75,75,74,74};
+    int rEnd4[190] = {75,75
+            ,75,75,75,75,75,75,72,65,72,72,72,73,73,75,85,71,75,85,71,75,75,71,75,75,72,72,72,72,73,73,80,26,76,66,66,66,76,75,75,75
+            ,75,75,75,72,75,75,72,73,73,63,63,95,98,80,26,66,66,66,75,75,75,75,75,75,63,63,95,98,72,81,72,74,74,72,72,79,74,72,74,74
+            ,66,66,66,80,26,74,74,79,74,74,74,87,27,87,27,80,26,80,26,65,80,26,7,80,80,26,86,26,80,26,80,26,86,57,65,80,26,65,80,26,
+                      65,94,58,65,72,74,74,72,72,74,74,77,77,63,63,95,98,75,75,75,85,71,75,85,71,75,75,71,75,75,75,75,72,72,72,73,73,72,66,66,
+                      66,75,75,75,85,71,75,85,71,75,75,71,75,75,72,72,72,73,73,75,75,75,75,65,76,76,75,75};
 
-
-    for(int i=0; i<178; i++) {
+    for(int i=0; i<190; i++) {
         mu_assert_int_eq(editStringLen4[i], amc->AMs[i]->editStringLen);
         mu_assert_int_eq(rStart4[i], amc->AMs[i]->rStart);
         mu_assert_int_eq(rEnd4[i], amc->AMs[i]->rEnd);

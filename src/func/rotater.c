@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void makeOandC(const int* bwt, int n, int** O, int* C, int alphabetSize) {
+void makeOandC(const int* bwt, int n, int** O, int* C) {
 
     int* firstRow = calloc(4,sizeof *firstRow);
     if(bwt[0]) {

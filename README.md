@@ -150,3 +150,13 @@ Search k=0, on long.fa and long.fastq: 13.659 sec. <br>
 Search k=1, on long.fa and long.fastq: 14.276 sec. <br>
 Search k=2, on long.fa and long.fastq: 59.95 sec. <br>
 Search k=3, on long.fa and long.fastq: 10 minutes, 30 sec.  <br>
+Search k=4, on long.fa and long.fastq: 16 minutes, 32 sec.  <br>
+
+#### Version 1.1 29/11
+Recursion with value instead of reference
+
+Search k=0, on long.fa and long.fastq: 15 sec. <br>
+Search k=1, on long.fa and long.fastq: 14.316 sec. <br>
+Search k=2, on long.fa and long.fastq: 56.788 sec. <br>
+Search k=3, on long.fa and long.fastq: 9 minutes, 52 sec.  <br>
+Search k=4, on long.fa and long.fastq: 15 minutes, 48 sec.  <br>

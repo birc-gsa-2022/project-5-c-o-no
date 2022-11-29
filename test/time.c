@@ -157,7 +157,7 @@ void timeRotation(int m, const char* pattern, int n, FILE *resFile) {
 
     int* bwt = generateBwt(n);
 
-    makeOandC(bwt, n+1, O, C, alphabetSize+1);
+    makeOandC(bwt, n+1, O, C);
 
     struct timeval stop, start;
     gettimeofday(&start, NULL);

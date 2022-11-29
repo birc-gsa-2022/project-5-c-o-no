@@ -181,7 +181,7 @@ void readFromProcessed(char *processString, char* readString, int allowedEdits) 
         int **O = malloc(n*sizeof (*O));
         int* C = calloc(5, sizeof *C);
 
-        makeOandC(bwt, n, O, C, alphabetSize);
+        makeOandC(bwt, n, O, C);
 
         while(*(processString++) != '\n') {}
 
@@ -204,7 +204,7 @@ void readFromProcessed(char *processString, char* readString, int allowedEdits) 
         int **RO = malloc(n*sizeof (*RO));
         //TODO don't remake C
         int* rC = calloc(5, sizeof *rC);
-        makeOandC(revbwt, n, RO, rC, alphabetSize);
+        makeOandC(revbwt, n, RO, rC);
 
 
 
