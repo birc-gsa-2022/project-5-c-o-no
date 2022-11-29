@@ -1,6 +1,6 @@
 #include "sa.h"
 #include <string.h>
-#include <malloc.h>
+#include <stdlib.h>
 
 
 int *constructSARadix(struct Fasta fasta, int reverse) {

@@ -1,7 +1,7 @@
-#include <malloc.h>
-#include <stdio.h>
 #include "approx.h"
 #include "rotater.h"
+#include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #define reset rec->r->start = rStart; rec->r->end = rEnd; rec->patIndex=patIndex; rec->patChar = com->pattern[rec->patIndex]; rec->editIndex = editIndex; rec->editAmount = editA;
 #define forAlphabet(code) for(int sym=1; sym<5; sym++) {code(sym, rec, com); reset;} //This is weird, I love it!

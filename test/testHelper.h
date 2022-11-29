@@ -1,6 +1,6 @@
 #ifndef SA_TESTHELPER_H
 #define SA_TESTHELPER_H
-#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 
 char *test_data_path;
