@@ -123,7 +123,7 @@ void processFastas(FILE* processFile, struct FastaContainer* fastaContainer, int
         fprintf(processFile, "\n");
         for(int j=0; j<fasta->fasta_len; j++) { //Save revbwt
             //TODO We can change this to compress, but not necessary
-            fprintf(processFile, "%d,", revSAs[i][j] ? fasta->fasta_sequence[revSAs[i][j]-1] : 0);
+            fprintf(processFile, "%d,", revSAs[i][j] ? fasta->fasta_sequence[fasta->fasta_len-revSAs[i][j]-1] : 0);
         }
         fprintf(processFile, "\n");
         for(int j=0; j<128; j++) {
@@ -154,7 +154,6 @@ void printEditString(struct ApproxMatch* am) {
 void readFromProcessed(char *processString, char* readString, int allowedEdits) {
     struct Range* saRange = malloc(sizeof *saRange);
     struct ReadContainer *read_container = makeReadContainer(readString);
-
     while(*processString != '\0') {
         char *fastaHead = processString;
         while (*(++processString) != '\n') {}

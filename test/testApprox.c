@@ -402,8 +402,82 @@ MU_TEST(test_saAlg) {
     free(revSa);
 }
 
+MU_TEST(test_runAprroxExactMis) {
+    int pattern[3] = {2,1,4};
+    int n = 12; // 214414413310
+    int m = 3; // 214
+
+    //D
+    int* C = calloc(n+1, sizeof *C);
+    int** RO = malloc(n*sizeof *RO);
+
+    struct Fasta* fasta = malloc(sizeof *fasta);
+    fasta->fasta_head = "head";
+
+    char * mal = malloc(sizeof(*mal)*n);
+    char* seq = "21441441331";
+    strcpy(mal, seq);
+    update_fasta_by_sequence(&mal, fasta);
+    int* sa = constructSARadix(*fasta, 0);
+    int* revSa = constructSARadix(*fasta, 1);
+
+    int* rbwt = malloc(n*sizeof *rbwt); //bwt of 133144144120
+    int* bwt = malloc(n*sizeof *bwt); //bwt of 214414413310
+
+    for(int i=0; i<n; i++) {
+        rbwt[i] = revSa[i] ? fasta->fasta_sequence[n-revSa[i] - 1] : 0;
+        bwt[i] = sa[i] ? fasta->fasta_sequence[sa[i] - 1] : 0;
+    }
+   /*
+    * 012345678901
+    * 133144144120
+    * 0 -> 2
+    * 1 :
+    *   120      -> 4
+    *   1331...  -> 0
+    *   144120   -> 4
+    *   144144120-> 3
+    * 2 -> 1
+    * 3 :
+    *   31... -> 3
+    *   33... -> 1
+    * 4:
+    *   4120    -> 4
+    *   4144120 -> 4
+    *   44120   -> 1
+    *   44144120-> 1
+    **/
+    int expRevSa[12] = {11, 9, 0, 6,3,10,2,1,8,5,7,4};
+    int expRbwt[12] = {2,4,0,4,3, 1, 3,1,4,4,1,1}; // 133144144120
+    mu_assert_int_arr_eq(expRevSa, revSa);
+    mu_assert_int_eq(2, *rbwt);
+    mu_assert_int_arr_eq(expRbwt, rbwt);
+
+    makeOandC(rbwt, n, RO, C, 5);
+    struct Range* r = malloc(sizeof *r);
+    int* D = malloc(m*sizeof *D);
+    makeD(D, C, RO, pattern, n, m, r);
+    mu_assert_int_eq(0, D[0]);
+    mu_assert_int_eq(0, D[1]);
+    mu_assert_int_eq(0, D[2]);
+
+    //O and C
+    memset(C, 0, n*sizeof (*C));
+    int** O = malloc(n*sizeof *O);
+    makeOandC(bwt, n, O, C, 5);
+
+    int allowedEdits=0;
+    char* editString = malloc(m+allowedEdits+1);
+
+
+    struct ApproxMatchContainer* amc = runApprox(pattern, n, m, D, C, O, allowedEdits, editString, r);
+
+    mu_assert_int_eq(1, amc->amount);
+    mu_assert_string_eq("MMM", amc->AMs[0]->editString);
+}
+
 MU_TEST_SUITE(fasta_parser_test_suite) {
-    MU_RUN_TEST(test_makeDeq);
+    /*MU_RUN_TEST(test_makeDeq);
     MU_RUN_TEST(test_makeDnotEq);
     MU_RUN_TEST(test_makeD1Edit);
     MU_RUN_TEST(test_runApproxExactEqSmall);
@@ -415,7 +489,8 @@ MU_TEST_SUITE(fasta_parser_test_suite) {
     MU_RUN_TEST(test_runApproxAsym2);
     MU_RUN_TEST(test_runApprox2Edits);
     MU_RUN_TEST(test_saAlgSmall);
-    MU_RUN_TEST(test_saAlg);
+    MU_RUN_TEST(test_saAlg);*/
+    MU_RUN_TEST(test_runAprroxExactMis);
 }
 
 
