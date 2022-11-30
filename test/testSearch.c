@@ -42,7 +42,7 @@ MU_TEST(test_search_multiple_sa_constr) {
     struct Fasta **fastas = fastasContainer->fastas;
 
     mu_assert_int_eq(2, fastasContainer->numberOfFastas);
-    int** sa = constructMultipleSARadix(fastasContainer);
+    int** sa = constructMultipleSA(fastasContainer);
 
     int *sa1 = malloc(12*sizeof *sa1);
     sa1[0] = 11;

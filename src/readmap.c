@@ -26,8 +26,8 @@ int main(int argc, char const *argv[])
         FILE* processFile = get_file(processFileName);
         free(processFileName);
         struct FastaContainer* fastaContainer = parse_fasta(fastaStr);
-        int** SAs = constructMultipleSARadix(fastaContainer);
-        int** revSAs = constructMultipleRevSARadix(fastaContainer);
+        int** SAs = constructMultipleSA(fastaContainer);
+        int** revSAs = constructMultipleRevSA(fastaContainer);
         processFastas(processFile, fastaContainer, SAs, revSAs);
         fclose(processFile);
         free_fasta_container(fastaContainer);

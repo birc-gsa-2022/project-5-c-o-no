@@ -118,5 +118,14 @@ struct Interval searchPatternInSA(struct Fasta fasta, const char* pattern, int* 
     return *interval;
 }
 
+int *constructSA(struct Fasta fasta, int reverse) {
+    return constructSARadix(fasta, reverse);
+}
 
+int **constructMultipleSA(struct FastaContainer *fastaContainer) {
+    return constructMultipleSARadix(fastaContainer);
+}
 
+int **constructMultipleRevSA(struct FastaContainer *fastaContainer) {
+    return constructMultipleRevSARadix(fastaContainer);
+}

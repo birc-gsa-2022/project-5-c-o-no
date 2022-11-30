@@ -69,7 +69,7 @@ int** timeConstructSAsRadix(FILE* file, struct FastaContainer* fastaContainer) {
     struct timeval stop, start;
     gettimeofday(&start, NULL);
 
-    int** SAs = constructMultipleSARadix(fastaContainer);
+    int** SAs = constructMultipleSA(fastaContainer);
 
     gettimeofday(&stop, NULL);
     fprintf(file, "%d,", getTime(start, stop));

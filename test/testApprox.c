@@ -334,8 +334,8 @@ MU_TEST(test_saAlgSmall) {
     mu_assert_int_eq(1, fasta->alphabet.sightings[2]);
     mu_assert_int_eq(1, fasta->alphabet.sightings[3]);
 
-    int* sa = constructSARadix(*fasta, 0);
-    int* revSa = constructSARadix(*fasta, 1);
+    int* sa = constructSA(*fasta, 0);
+    int* revSa = constructSA(*fasta, 1);
 
     struct Fasta* fasta2 = malloc(sizeof *fasta);
     fasta->fasta_head = "head";
@@ -353,7 +353,7 @@ MU_TEST(test_saAlgSmall) {
 
     int revSaExp[4] = {3,2,1,0};
 
-    int* sa2 = constructSARadix(*fasta2, 0);
+    int* sa2 = constructSA(*fasta2, 0);
     mu_assert_int_arr_eq(revSaExp, sa2);
 
     int saExp[4] = {3,0,1,2};
@@ -384,8 +384,8 @@ MU_TEST(test_saAlg) {
     mu_assert_int_eq(1, fasta->alphabet.sightings[3]);
     mu_assert_int_eq(1, fasta->alphabet.sightings[4]);
 
-    int* sa = constructSARadix(*fasta, 0);
-    int* revSa = constructSARadix(*fasta, 1);
+    int* sa = constructSA(*fasta, 0);
+    int* revSa = constructSA(*fasta, 1);
 
     //012345678
     //123124120
@@ -416,8 +416,8 @@ MU_TEST(test_runApproxExactMis) {
     char* seq = "21441441331";
     strcpy(mal, seq);
     update_fasta_by_sequence(&mal, fasta);
-    int* sa = constructSARadix(*fasta, 0);
-    int* revSa = constructSARadix(*fasta, 1);
+    int* sa = constructSA(*fasta, 0);
+    int* revSa = constructSA(*fasta, 1);
 
     int* rbwt = malloc(n*sizeof *rbwt); //bwt of 133144144120
     int* bwt = malloc(n*sizeof *bwt); //bwt of 214414413310
@@ -492,8 +492,8 @@ MU_TEST(test_nonConfirmed) {
     strcpy(mal, seq);
     update_fasta_by_sequence(&mal, fasta);
 
-    int* sa = constructSARadix(*fasta, 0);
-    int* revSa = constructSARadix(*fasta, 1);
+    int* sa = constructSA(*fasta, 0);
+    int* revSa = constructSA(*fasta, 1);
 
     int* rbwt = malloc(n*sizeof *rbwt);
     int* bwt = malloc(n*sizeof *bwt);
