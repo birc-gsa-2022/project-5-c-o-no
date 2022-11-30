@@ -621,24 +621,21 @@ MU_TEST(test_saConstructionKnow) {
 
 MU_TEST(test_saConstructionRandomSeed) {
     srand(1);
-    int* seq = malloc(sizeof(*seq)*(100000+1));
+    int n = 10000;
+    char** seqp = malloc(sizeof seqp);
+    char* seq = malloc((n+1)*sizeof *seq);
+    seqp[0] = seq;
     struct Fasta* fasta = malloc(sizeof *fasta);
-    for(int len=1; len<10000; len++) {
+    for(int len=1; len<=n; len++) {
         for(int i=0; i<len; i++) {
-            seq[i] = (rand() % 4)+ 1;
+            seq[i] = (rand() % 4) + '1';
         }
         seq[len] = '\0';
-        update_fasta_by_sequence(&seq, fasta);
-        if(len==448) {
-            printf("seq is %s\n", seq);
-            printf("seq[391] %c\n", seq[391]);
-            printf("x is %s\n", fasta->fasta_sequence);
-            printf("seq[391] %c\n", fasta->fasta_sequence[391]);
-        }
+        update_fasta_by_sequence(seqp, fasta);
+
         compareSA(*fasta, 0);
         compareSA(*fasta, 1);
     }
-    free(seq);
     freeFasta(fasta);
 }
 
@@ -654,7 +651,6 @@ MU_TEST(test_saConstructionRandom) {
         compareSA(*fasta, 0);
         compareSA(*fasta, 1);
     }
-    free(seq);
     freeFasta(fasta);
 }
 
@@ -677,7 +673,7 @@ MU_TEST_SUITE(fasta_parser_test_suite) {
     MU_RUN_TEST(test_nonConfirmed);
     MU_RUN_TEST(test_saConstructionKnow);
     //MU_RUN_TEST(test_saConstructionRandom);
-    //MU_RUN_TEST(test_saConstructionRandomSeed);
+    MU_RUN_TEST(test_saConstructionRandomSeed);
 }
 
 
