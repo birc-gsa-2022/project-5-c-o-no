@@ -615,14 +615,33 @@ void compareSA(struct Fasta fasta, int reverse) {
     mu_assert_int_arr_eq(saRadix, saMain);
 }
 
+struct Fasta* makeFasta(char* seq) {
+    char** seqp = malloc(sizeof *seqp);
+    seqp[0] = seq;
+    //strcpy(seqp, seq);
+    struct Fasta* fasta = malloc(sizeof *fasta);
+    update_fasta_by_sequence(seqp, fasta);
+    return fasta;
+}
+
+
 MU_TEST(test_saConstructionKnow) {
+    char* seq1 = "12341234";
+    char** seqp = malloc(sizeof *seqp);
+    seqp[0] = seq1;
+    struct Fasta* fasta = malloc(sizeof *fasta);
+    update_fasta_by_sequence(seqp, fasta);
+    int exp1[9] = {8,4,0,5,1,6,2,7,3};
+    int exp1Rev[9] = {8,7,3,6,2,5,1,4,0};
+    compareSAExpected(exp1, *fasta, 0);
+    freeFasta(fasta);
 
 }
 
 MU_TEST(test_saConstructionRandomSeed) {
     srand(1);
-    int n = 10000;
-    char** seqp = malloc(sizeof seqp);
+    int n = 1000;
+    char** seqp = malloc(sizeof *seqp);
     char* seq = malloc((n+1)*sizeof *seq);
     seqp[0] = seq;
     struct Fasta* fasta = malloc(sizeof *fasta);
@@ -640,14 +659,17 @@ MU_TEST(test_saConstructionRandomSeed) {
 }
 
 MU_TEST(test_saConstructionRandom) {
-    int* seq = malloc(sizeof(*seq)*(100000+1));
+    int n = 1000;
+    char** seqp = malloc(sizeof *seqp);
+    char* seq = malloc((n+1)*sizeof *seq);
     struct Fasta* fasta = malloc(sizeof *fasta);
-    for(int len=1; len<10000; len++) {
+    seqp[0] = seq;
+    for(int len=1; len<=n; len++) {
         for(int i=0; i<len; i++) {
             seq[i] = (rand() % 4)+1;
         }
         seq[len] = '\0';
-        update_fasta_by_sequence(&seq, fasta);
+        update_fasta_by_sequence(seqp, fasta);
         compareSA(*fasta, 0);
         compareSA(*fasta, 1);
     }
@@ -671,8 +693,8 @@ MU_TEST_SUITE(fasta_parser_test_suite) {
     MU_RUN_TEST(test_saAlg);
     MU_RUN_TEST(test_runApproxExactMis);
     MU_RUN_TEST(test_nonConfirmed);
-    MU_RUN_TEST(test_saConstructionKnow);
-    //MU_RUN_TEST(test_saConstructionRandom);
+    //MU_RUN_TEST(test_saConstructionKnow);
+    MU_RUN_TEST(test_saConstructionRandom);
     MU_RUN_TEST(test_saConstructionRandomSeed);
 }
 
