@@ -118,6 +118,44 @@ struct Interval searchPatternInSA(struct Fasta fasta, const char* pattern, int* 
     return *interval;
 }
 
+
+
+
+
+int *constructSAPrefixDoubling(struct Fasta fasta, int reverse) {
+    return constructSARadix(fasta, reverse);
+}
+
+
+
+
+int **constructMultipleSAPrefixDoubling(struct FastaContainer *fastaContainer) {
+    int **SAs = malloc(fastaContainer->numberOfFastas*sizeof *SAs);
+
+    for(int i=0; i<fastaContainer->numberOfFastas; i++) {
+        int *sa = constructSAPrefixDoubling(*(fastaContainer->fastas)[i], 0);
+        SAs[i] = sa;
+    }
+    return SAs;
+}
+
+int **constructMultipleRevSAPrefixDoubling(struct FastaContainer *fastaContainer) {
+    int **SAs = malloc(fastaContainer->numberOfFastas*sizeof *SAs);
+
+    for(int i=0; i<fastaContainer->numberOfFastas; i++) {
+        int *sa = constructSAPrefixDoubling(*(fastaContainer->fastas)[i], 1);
+        SAs[i] = sa;
+    }
+    return SAs;
+}
+
+
+
+
+
+
+
+
 int *constructSA(struct Fasta fasta, int reverse) {
     return constructSARadix(fasta, reverse);
 }

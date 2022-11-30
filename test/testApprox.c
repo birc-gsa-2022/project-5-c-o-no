@@ -597,6 +597,66 @@ MU_TEST(test_nonConfirmed) {
 }
 
 
+void compareSAExpected(int* expected, struct Fasta fasta, int reverse) {
+    int* saRadix = constructSARadix(fasta, reverse);
+    int* saPrefixDoubling = constructSAPrefixDoubling(fasta, reverse);
+    int* saMain = constructSA(fasta, reverse);
+    mu_assert_int_arr_eq(expected, saRadix);
+    mu_assert_int_arr_eq(expected, saPrefixDoubling);
+    mu_assert_int_arr_eq(expected, saMain);
+
+}
+
+void compareSA(struct Fasta fasta, int reverse) {
+    int* saRadix = constructSARadix(fasta, reverse);
+    int* saPrefixDoubling = constructSAPrefixDoubling(fasta, reverse);
+    int* saMain = constructSA(fasta, reverse);
+    mu_assert_int_arr_eq(saRadix, saPrefixDoubling);
+    mu_assert_int_arr_eq(saRadix, saMain);
+}
+
+MU_TEST(test_saConstructionKnow) {
+
+}
+
+MU_TEST(test_saConstructionRandomSeed) {
+    srand(1);
+    int* seq = malloc(sizeof(*seq)*(100000+1));
+    struct Fasta* fasta = malloc(sizeof *fasta);
+    for(int len=1; len<10000; len++) {
+        for(int i=0; i<len; i++) {
+            seq[i] = (rand() % 4)+ 1;
+        }
+        seq[len] = '\0';
+        update_fasta_by_sequence(&seq, fasta);
+        if(len==448) {
+            printf("seq is %s\n", seq);
+            printf("seq[391] %c\n", seq[391]);
+            printf("x is %s\n", fasta->fasta_sequence);
+            printf("seq[391] %c\n", fasta->fasta_sequence[391]);
+        }
+        compareSA(*fasta, 0);
+        compareSA(*fasta, 1);
+    }
+    free(seq);
+    freeFasta(fasta);
+}
+
+MU_TEST(test_saConstructionRandom) {
+    int* seq = malloc(sizeof(*seq)*(100000+1));
+    struct Fasta* fasta = malloc(sizeof *fasta);
+    for(int len=1; len<10000; len++) {
+        for(int i=0; i<len; i++) {
+            seq[i] = (rand() % 4)+1;
+        }
+        seq[len] = '\0';
+        update_fasta_by_sequence(&seq, fasta);
+        compareSA(*fasta, 0);
+        compareSA(*fasta, 1);
+    }
+    free(seq);
+    freeFasta(fasta);
+}
 
 
 MU_TEST_SUITE(fasta_parser_test_suite) {
@@ -615,6 +675,9 @@ MU_TEST_SUITE(fasta_parser_test_suite) {
     MU_RUN_TEST(test_saAlg);
     MU_RUN_TEST(test_runApproxExactMis);
     MU_RUN_TEST(test_nonConfirmed);
+    MU_RUN_TEST(test_saConstructionKnow);
+    //MU_RUN_TEST(test_saConstructionRandom);
+    //MU_RUN_TEST(test_saConstructionRandomSeed);
 }
 
 

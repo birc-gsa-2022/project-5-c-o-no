@@ -11,9 +11,14 @@ struct Interval {
 int *constructSA(struct Fasta fasta, int reverse);
 int **constructMultipleSA(struct FastaContainer *fastaContainer);
 int **constructMultipleRevSA(struct FastaContainer *fastaContainer);
+
 int *constructSARadix(struct Fasta fasta, int reverse);
 int **constructMultipleSARadix(struct FastaContainer *fastaContainer);
 int **constructMultipleRevSARadix(struct FastaContainer *fastaContainer);
+int *constructSAPrefixDoubling(struct Fasta fasta, int reverse);
+int **constructMultipleSAPrefixDoubling(struct FastaContainer *fastaContainer);
+int **constructMultipleRevSAPrefixDoubling(struct FastaContainer *fastaContainer);
+
 struct Interval binarySearch(const char* x, const int* sa, char patchar, int parIndex, struct Interval interval, int mode);
 struct Interval searchPatternInSA(struct Fasta fasta, const char* pattern, int* sa, int m);
 

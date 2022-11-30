@@ -1,6 +1,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include "simple-fasta-parser.h"
+#include <stdio.h>
 
 
 #define LPA 128 // Last printable ascii
@@ -83,6 +84,8 @@ void update_fasta_by_sequence(char **strptr, struct Fasta *f) {
         string[l] = (char) bigAlphabet[string[l]];
     }
 
+    printf("string is %s\n", string);
+    printf("num is %d\n", *string);
     f->alphabet.size = alphabetSize;
     f->alphabet.symbols = bigAlphabet;
     f->alphabet.sightings = sightings;
