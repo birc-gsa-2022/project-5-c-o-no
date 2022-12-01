@@ -129,11 +129,11 @@ uint64_t getByte(uint64_t key, int index) {
     return (rightShift & maskLow);
 }
 
-int radixSort64Interval(int start, int end, int* sa, const uint64_t* keys) {
+void radixSort64Interval(int start, int end, int* sa, uint64_t* keys) {
     //Sort the interval
     int intervalSize = end-start+1;
-    int* saWriter = malloc(intervalSize*sizeof *saWriter);
-
+    int* saWriter = malloc((intervalSize)*sizeof *saWriter);
+    uint64_t* keyWriter = malloc((intervalSize)*sizeof *keyWriter);
     //Sort 8 bytes
     for(int byteIndex=0; byteIndex<8; byteIndex++) {
         int* bucketIndices = calloc(BYTEPOSSIBILITIES, sizeof *bucketIndices);
@@ -142,7 +142,7 @@ int radixSort64Interval(int start, int end, int* sa, const uint64_t* keys) {
         //Count number of each combination
         for(int j=start; j<end+1; j++) {
             uint64_t byte = getByte(keys[j], byteIndex);
-            bucketIndices[byte]++;
+            bucketIndices[(int)byte]++;
         }
 
         int accum = 0;
@@ -150,26 +150,33 @@ int radixSort64Interval(int start, int end, int* sa, const uint64_t* keys) {
             int sight = bucketIndices[j];
             bucketIndices[j] = accum;
             accum += sight;
+            if(accum==intervalSize) break; //TODO make sure
         }
 
         //Sort
         for(int j=start; j<=end; j++) {
             uint64_t byte = getByte(keys[j], byteIndex);
-            int saIndex = bucketIndices[byte] + (buckets[byte]++);
+            int saIndex = bucketIndices[(int)byte] + (buckets[(int)byte]++);
             saWriter[saIndex-start] = sa[j];
+            keyWriter[saIndex-start] = keys[j];
         }
 
         //Write to sa
         for(int j=start; j<=end; j++) {
             sa[j] = saWriter[j-start];
+            keys[j] = keyWriter[j-start];
         }
         //memcpy(&sa[start], saWriter, intervalSize*sizeof *saWriter);
 
+        free(bucketIndices);
+        free(buckets);
+
     }
     free(saWriter);
+    free(keyWriter);
 }
 
-int radixSort64(int* sa, const uint64_t* keys, uint32_t* rank, const int n) {
+int radixSort64(int* sa, uint64_t* keys, uint32_t* rank, const int n) {
     //Return 1 if sorted
 
     uint64_t prevKey = keys[0];
@@ -226,37 +233,12 @@ int* constructSAPrefixDoubling(struct Fasta fasta, int reverse) {
     radixSort64Interval(0, n-1, sa, key);
 
 
-    /*sa[0] = n-1;
-    rank[0] = 0;
-    key[0] = 0;
-
-    int AIndex = 1;
-    int CIndex = fasta.alphabet.sightings[1]+1;
-    int GIndex = CIndex + fasta.alphabet.sightings[2];
-    int TIndex = GIndex + fasta.alphabet.sightings[3];
-    int bucketIndecies[4] = {AIndex, CIndex, GIndex, TIndex};
-    int* buckets = calloc(NUMDIFFCHARS, sizeof *buckets);
-
-    for(int i=0; i<n-1; i++) {
-        uint32_t curRank = (uint32_t)fasta.fastaSeqVal[reverse ? n-i-2 : i];
-        int index = (buckets[curRank-1]++) + bucketIndecies[curRank-1];
-        rank[index] = curRank;
-        sa[index] = i;
-    }
-
-    for(int i=0; i<n-1; i++) {
-        key
-    }*/
-
-
     for(int k=1; k<(int)log2(n); k <<= 1) {
         for(int i=0; i<n; i++) {
             int saVal = sa[i];
             uint64_t lower = saVal+k<n ? rank[saVal+k] : 0;
             key[i] = (uint64_t)rank[i]<<32 | lower;
-            printf("key is %lld made from %d -> %lld and %lld\n", key[i], rank[i], (uint64_t)rank[i]<<32, lower);
         }
-
 
         if(radixSort64(sa, key, rank, n)) break;
     }
