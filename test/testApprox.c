@@ -3,6 +3,7 @@
 #include "../src/func/approx.h"
 #include "../src/func/sa.h"
 #include "../src/func/helper.h"
+#include "../src/func/debugger.h"
 
 MU_TEST(test_makeDeq) {
     int* C = calloc(5, sizeof *C);
@@ -626,14 +627,23 @@ struct Fasta* makeFasta(char* seq) {
 
 
 MU_TEST(test_saConstructionKnow) {
-    char* seq1 = "12341234";
-    char** seqp = malloc(sizeof *seqp);
-    seqp[0] = seq1;
     struct Fasta* fasta = malloc(sizeof *fasta);
-    update_fasta_by_sequence(seqp, fasta);
+    /*
+    char * mal1 = malloc(sizeof(*mal1)*9);
+    char* seq1 = "ACGTACGT";
+    strcpy(mal1, seq1);
+    update_fasta_by_sequence(&mal1, fasta);
     int exp1[9] = {8,4,0,5,1,6,2,7,3};
     int exp1Rev[9] = {8,7,3,6,2,5,1,4,0};
     compareSAExpected(exp1, *fasta, 0);
+    compareSAExpected(exp1Rev, *fasta, 1);
+*/
+    char * mal2 = malloc(sizeof(*mal2)*12);
+    char* seq2 = "CATTATTAGGA";
+    strcpy(mal2, seq2);
+    update_fasta_by_sequence(&mal2, fasta);
+    int exp2[12] = {11,10,7,4,1,0,9,8,6,3,5,2};
+    compareSAExpected(exp2, *fasta, 0);
     freeFasta(fasta);
 
 }
@@ -647,7 +657,7 @@ MU_TEST(test_saConstructionRandomSeed) {
     struct Fasta* fasta = malloc(sizeof *fasta);
     for(int len=1; len<=n; len++) {
         for(int i=0; i<len; i++) {
-            seq[i] = (rand() % 4) + '1';
+            seq[i] = (rand() % 4) + 'A';
         }
         seq[len] = '\0';
         update_fasta_by_sequence(seqp, fasta);
@@ -666,7 +676,7 @@ MU_TEST(test_saConstructionRandom) {
     seqp[0] = seq;
     for(int len=1; len<=n; len++) {
         for(int i=0; i<len; i++) {
-            seq[i] = (rand() % 4)+1;
+            seq[i] = (rand() % 4)+'A';
         }
         seq[len] = '\0';
         update_fasta_by_sequence(seqp, fasta);
@@ -676,9 +686,46 @@ MU_TEST(test_saConstructionRandom) {
     freeFasta(fasta);
 }
 
+MU_TEST(test_radixGetByte) {
+    uint64_t* res = malloc(8*sizeof *res);
+    for(int i=0; i<8; i++) {
+        res[i] = getByte((uint64_t)2<<32 | 1, i);
+    }
+    uint64_t exp[8] = {1, 0,0,0, 2, 0,0,0};
+    mu_assert_int_arr_eq(exp, res);
+
+    for(int i=0; i<8; i++) {
+        res[i] = getByte((uint64_t)4<<32 | 4, i);
+    }
+    uint64_t exp2[8] = {4, 0,0,0, 4, 0,0,0};
+    mu_assert_int_arr_eq(exp2, res);
+
+}
+
+MU_TEST(test_radixSort64Interval) {
+    int sa[2] = {0,1};
+    // Ez-Keys: 21, 14,44,41,14
+    uint64_t keys[2] = { (uint64_t)1<<32|4, (uint64_t)2<<32 | 1};
+    radixSort64Interval(0,1, sa, keys);
+    int exp[2] = {0,1};
+    printf("sa: ");
+    printIntArray(sa, 5);
+    mu_assert_int_arr_eq(exp, sa);
+
+/*
+    int sa2[5] = {0,1,2,3,4};
+    // Ez-Keys: 21, 14,44,41,14
+    uint64_t keys2[5] = {(uint64_t)2<<32 | 1, (uint64_t)1<<32|4, (uint64_t)4<<32|4, (uint64_t)4<<32|1, (uint64_t)1<<32|4};
+    radixSort64Interval(0,4, sa2, keys2);
+    int exp2[5] = {1,4, 0,3,2 };
+    printf("sa: ");
+    printIntArray(sa2, 5);
+    mu_assert_int_arr_eq(exp2, sa2);*/
+}
+
 
 MU_TEST_SUITE(fasta_parser_test_suite) {
-    MU_RUN_TEST(test_makeDeq);
+    /*MU_RUN_TEST(test_makeDeq);
     MU_RUN_TEST(test_makeDnotEq);
     MU_RUN_TEST(test_makeD1Edit);
     MU_RUN_TEST(test_runApproxExactEqSmall);
@@ -692,10 +739,12 @@ MU_TEST_SUITE(fasta_parser_test_suite) {
     MU_RUN_TEST(test_saAlgSmall);
     MU_RUN_TEST(test_saAlg);
     MU_RUN_TEST(test_runApproxExactMis);
-    MU_RUN_TEST(test_nonConfirmed);
+    MU_RUN_TEST(test_nonConfirmed);*/
     //MU_RUN_TEST(test_saConstructionKnow);
-    MU_RUN_TEST(test_saConstructionRandom);
-    MU_RUN_TEST(test_saConstructionRandomSeed);
+    //MU_RUN_TEST(test_saConstructionRandom);
+    //MU_RUN_TEST(test_saConstructionRandomSeed);
+    //MU_RUN_TEST(test_radixSort64Interval);
+    //MU_RUN_TEST(test_radixGetByte);
 }
 
 
