@@ -1,6 +1,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include "simple-fasta-parser.h"
+#include <stdio.h>
 
 
 #define LPA 128 // Last printable ascii
@@ -77,9 +78,46 @@ void update_fasta_by_sequence(char **strptr, struct Fasta *f) {
 
     //char * debugger = malloc((i+1)*sizeof *debugger);
     //debugger[i+1] = '\0';
+    int* fastaSeqVal =  malloc((i+1)*sizeof *fastaSeqVal);
 
     for(int l=0; l<i+1; l++) {
         //debugger[l] = string[l];
+        //TODO use this and make tests fit
+        switch (string[l]) {
+            case 'A':
+                fastaSeqVal[l] = 1;
+                break;
+            case 'C':
+                fastaSeqVal[l] = 2;
+                break;
+            case 'G':
+                fastaSeqVal[l] = 3;
+                break;
+            case 'T':
+                fastaSeqVal[l] = 4;
+                break;
+            case '\0':
+                fastaSeqVal[l] = 0;
+                break;
+            case '1':
+                fastaSeqVal[l] = 1;
+                break;
+            case '2':
+                fastaSeqVal[l] = 2;
+                break;
+            case '3':
+                fastaSeqVal[l] = 3;
+                break;
+            case '4':
+                fastaSeqVal[l] = 4;
+                break;
+            case '0':
+                fastaSeqVal[l] = 0;
+                break;
+            default:
+                fastaSeqVal[l] = string[l];
+                break;
+        }
         string[l] = (char) bigAlphabet[string[l]];
     }
 
@@ -88,6 +126,7 @@ void update_fasta_by_sequence(char **strptr, struct Fasta *f) {
     f->alphabet.sightings = sightings;
     f->fasta_sequence = string;
     f->fasta_len = i+1;
+    f->fastaSeqVal = fastaSeqVal;
     //f->fasta_sequence_debugger = debugger;
 }
 

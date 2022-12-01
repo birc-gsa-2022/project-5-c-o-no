@@ -10,7 +10,7 @@ struct Alphabet {
 struct Fasta {
     char *fasta_head;
     char *fasta_sequence;
-    //char *fasta_sequence_debugger;
+    int* fastaSeqVal;
     int fasta_len;
     struct Alphabet alphabet;
 };
@@ -24,6 +24,7 @@ int *alloc_sightings(int *bigAlphabet, int alphabetSize);
 char *read_fasta_head(char **strptr);
 void update_fasta_by_sequence(char **strptr, struct Fasta *f);
 struct FastaContainer *parse_fasta(char *fasta_str);
+void freeFasta(struct Fasta *fasta);
 void free_fastas(struct Fasta **fastas, int count);
 void free_fasta_container(struct FastaContainer *fc);
 

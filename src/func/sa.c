@@ -1,7 +1,11 @@
 #include "sa.h"
 #include <string.h>
 #include <stdlib.h>
-
+#include <stdio.h>
+#include <stdint.h>
+#include <math.h>
+#include "constants.h"
+#define BYTEPOSSIBILITIES 256
 
 int *constructSARadix(struct Fasta fasta, int reverse) {
     int n = fasta.fasta_len;
@@ -117,6 +121,168 @@ struct Interval searchPatternInSA(struct Fasta fasta, const char* pattern, int* 
     free(intervalSaver);
     return *interval;
 }
+
+uint64_t getByte(uint64_t key, int index) {
+    uint32_t maskLow = 255; //11111111
+    uint64_t maskHigh = (uint64_t)maskLow << index*8;
+    uint64_t rightShift = (key & maskHigh) >> index*8;
+    return (rightShift & maskLow);
+}
+
+void radixSort64Interval(int start, int end, int* sa, uint64_t* keys) {
+    //Sort the interval
+    int intervalSize = end-start+1;
+    int* saWriter = malloc((intervalSize)*sizeof *saWriter);
+    uint64_t* keyWriter = malloc((intervalSize)*sizeof *keyWriter);
+    //Sort 8 bytes
+    for(int byteIndex=0; byteIndex<8; byteIndex++) {
+        int* bucketIndices = calloc(BYTEPOSSIBILITIES, sizeof *bucketIndices);
+        int* buckets = calloc(BYTEPOSSIBILITIES, sizeof *buckets);
+
+        //Count number of each combination
+        for(int j=start; j<end+1; j++) {
+            uint64_t byte = getByte(keys[j], byteIndex);
+            bucketIndices[(int)byte]++;
+        }
+
+        int accum = 0;
+        for(int j=0; j<BYTEPOSSIBILITIES; j++) {
+            int sight = bucketIndices[j];
+            bucketIndices[j] = accum;
+            accum += sight;
+            if(accum==intervalSize) break; //TODO make sure
+        }
+
+        //Sort
+        for(int j=start; j<=end; j++) {
+            uint64_t k1 = keys[start];
+            uint64_t k2 = keys[start+1];
+            uint64_t k3 = keys[start+2];
+            uint64_t byte = getByte(keys[j], byteIndex);
+            int saIndex = bucketIndices[(int)byte] + (buckets[(int)byte]++);
+            saWriter[saIndex] = sa[j];
+            int s = sa[j];
+            keyWriter[saIndex] = keys[j];
+        }
+
+        //Write to sa
+        for(int j=start; j<=end; j++) {
+            sa[j] = saWriter[j-start];
+            keys[j] = keyWriter[j-start];
+        }
+        //memcpy(&sa[start], saWriter, intervalSize*sizeof *saWriter);
+
+        free(bucketIndices);
+        free(buckets);
+
+    }
+    free(saWriter);
+    free(keyWriter);
+}
+
+int radixSort64(int* sa, uint64_t* keys, uint32_t* rank, const int n) {
+    //Return 1 if sorted
+
+    uint64_t prevKey = keys[0];
+    int start = 0;
+    int end = 0;
+    int sorted = 1;
+    int rankVal = 1;
+
+    for(int i=1; i<n; i++) {
+        //Find interval to sort
+        rank[i] = rankVal;
+        if(keys[i]==prevKey) end++;
+        else{
+            prevKey = keys[i];
+            ++rankVal;
+
+            if(start!=end) {
+                sorted = 0;
+                radixSort64Interval(start, end, sa, keys);
+            }
+
+            start = i;
+            end = i;
+        }
+
+    }
+    if(start!=end) {
+        sorted = 0;
+        radixSort64Interval(start, end, sa, keys);
+    }
+
+    return sorted;
+}
+
+
+int* constructSAPrefixDoubling(struct Fasta fasta, int reverse) {
+    int n = fasta.fasta_len;
+    int* sa = malloc(n*sizeof *sa);
+    uint32_t* rank = malloc(n*sizeof *rank);
+    uint64_t* key = malloc(n*sizeof *key);
+
+
+    //Initial sorting
+    sa[n-1] = n-1;
+    rank[n-1] = 0;
+    key[n-1] = 0;
+
+    for(int i=0; i<n-1; i++) {
+        sa[i] = i;
+        rank[i] = (uint32_t)fasta.fastaSeqVal[reverse ? n-i-2 : i];
+    }
+
+    for(int i=0; i<n-2; i++) {
+        key[i] = (uint64_t)rank[i]<<32 | rank[i+1];
+    }
+    key[n-2] = (uint64_t)rank[n-2]<<32;
+    radixSort64Interval(0, n-1, sa, key);
+
+    //math.h not found, can't do k<(int)log2(n)
+    for(int k=1; (1<<k)<n; k <<= 1) {
+        for(int i=0; i<n; i++) {
+            int saVal = sa[i];
+            uint64_t lower = saVal+k<n ? rank[saVal+k] : 0;
+            key[i] = (uint64_t)rank[i]<<32 | lower;
+        }
+
+        if(radixSort64(sa, key, rank, n)) break;
+    }
+
+
+    return sa;
+}
+
+
+
+
+int **constructMultipleSAPrefixDoubling(struct FastaContainer *fastaContainer) {
+    int **SAs = malloc(fastaContainer->numberOfFastas*sizeof *SAs);
+
+    for(int i=0; i<fastaContainer->numberOfFastas; i++) {
+        int *sa = constructSAPrefixDoubling(*(fastaContainer->fastas)[i], 0);
+        SAs[i] = sa;
+    }
+    return SAs;
+}
+
+int **constructMultipleRevSAPrefixDoubling(struct FastaContainer *fastaContainer) {
+    int **SAs = malloc(fastaContainer->numberOfFastas*sizeof *SAs);
+
+    for(int i=0; i<fastaContainer->numberOfFastas; i++) {
+        int *sa = constructSAPrefixDoubling(*(fastaContainer->fastas)[i], 1);
+        SAs[i] = sa;
+    }
+    return SAs;
+}
+
+
+
+
+
+
+
 
 int *constructSA(struct Fasta fasta, int reverse) {
     return constructSARadix(fasta, reverse);
