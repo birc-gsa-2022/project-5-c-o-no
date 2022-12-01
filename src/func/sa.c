@@ -239,8 +239,8 @@ int* constructSAPrefixDoubling(struct Fasta fasta, int reverse) {
     key[n-2] = (uint64_t)rank[n-2]<<32;
     radixSort64Interval(0, n-1, sa, key);
 
-
-    for(int k=1; k<(int)log2(n); k <<= 1) {
+    //math.h not found, can't do k<(int)log2(n)
+    for(int k=1; (1<<k)<n; k <<= 1) {
         for(int i=0; i<n; i++) {
             int saVal = sa[i];
             uint64_t lower = saVal+k<n ? rank[saVal+k] : 0;
