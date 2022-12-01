@@ -207,7 +207,10 @@ int radixSort64(int* sa, uint64_t* keys, uint32_t* rank, const int n) {
         }
 
     }
-    //TODO remeber last iteration
+    if(start!=end) {
+        sorted = 0;
+        radixSort64Interval(start, end, sa, keys);
+    }
 
     return sorted;
 }
@@ -215,14 +218,13 @@ int radixSort64(int* sa, uint64_t* keys, uint32_t* rank, const int n) {
 
 int* constructSAPrefixDoubling(struct Fasta fasta, int reverse) {
     int n = fasta.fasta_len;
-    //int* x = malloc(n*sizeof *x);
     int* sa = malloc(n*sizeof *sa);
     uint32_t* rank = malloc(n*sizeof *rank);
     uint64_t* key = malloc(n*sizeof *key);
 
 
     //Initial sorting
-    sa[n-1] = 11;
+    sa[n-1] = n-1;
     rank[n-1] = 0;
     key[n-1] = 0;
 

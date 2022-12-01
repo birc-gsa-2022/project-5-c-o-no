@@ -628,7 +628,26 @@ struct Fasta* makeFasta(char* seq) {
 
 MU_TEST(test_saConstructionKnow) {
     struct Fasta* fasta = malloc(sizeof *fasta);
+/*
+    char * malsmall = malloc(sizeof(*malsmall)*3);
+    char* seqsmall = "AA";
+    strcpy(malsmall, seqsmall);
+    update_fasta_by_sequence(&malsmall, fasta);
+    int expsmall[3] = {2,1,0};
+    int expsmallRev[3] = {2,1,0};
+    compareSAExpected(expsmall, *fasta, 0);
+    compareSAExpected(expsmallRev, *fasta, 1);*/
 
+    char * mal0 = malloc(sizeof(*mal0)*5);
+    char* seq0 = "ACAC";
+    strcpy(mal0, seq0);
+    update_fasta_by_sequence(&mal0, fasta);
+    int exp0[5] = {4,2,0,3,1};
+    int exp0Rev[5] = {4,3,1,2,0};
+    compareSAExpected(exp0, *fasta, 0);
+    compareSAExpected(exp0Rev, *fasta, 1);
+
+/*
     char * mal1 = malloc(sizeof(*mal1)*9);
     char* seq1 = "ACGTACGT";
     strcpy(mal1, seq1);
@@ -637,7 +656,7 @@ MU_TEST(test_saConstructionKnow) {
     int exp1Rev[9] = {8,7,3,6,2,5,1,4,0};
     compareSAExpected(exp1, *fasta, 0);
     compareSAExpected(exp1Rev, *fasta, 1);
-/*
+
     char * mal2 = malloc(sizeof(*mal2)*12);
     char* seq2 = "CATTATTAGGA";
     strcpy(mal2, seq2);
