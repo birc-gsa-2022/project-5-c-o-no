@@ -155,10 +155,14 @@ void radixSort64Interval(int start, int end, int* sa, uint64_t* keys) {
 
         //Sort
         for(int j=start; j<=end; j++) {
+            uint64_t k1 = keys[start];
+            uint64_t k2 = keys[start+1];
+            uint64_t k3 = keys[start+2];
             uint64_t byte = getByte(keys[j], byteIndex);
             int saIndex = bucketIndices[(int)byte] + (buckets[(int)byte]++);
-            saWriter[saIndex-start] = sa[j];
-            keyWriter[saIndex-start] = keys[j];
+            saWriter[saIndex] = sa[j];
+            int s = sa[j];
+            keyWriter[saIndex] = keys[j];
         }
 
         //Write to sa
@@ -203,6 +207,7 @@ int radixSort64(int* sa, uint64_t* keys, uint32_t* rank, const int n) {
         }
 
     }
+    //TODO remeber last iteration
 
     return sorted;
 }

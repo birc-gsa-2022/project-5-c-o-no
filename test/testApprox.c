@@ -707,6 +707,7 @@ uint64_t com(uint32_t a, uint32_t b) {
 }
 
 MU_TEST(test_radixSort64Interval) {
+
     int sa[2] = {0,1};
     // Keys: 14, 23
     uint64_t keys[2] = { (uint64_t)1<<32|4, (uint64_t)2<<32 | 3};
@@ -738,10 +739,10 @@ MU_TEST(test_radixSort64Interval) {
     // 25, 95, 75, 22, 41
     uint64_t keys4[5] = {com(2,5), com(9,5), com(7,5), com(2,2), com(4,1)};
     radixSort64Interval(1,3, sa4, keys4);
-    int exp4[5] = {0,3,2,14};
+    int exp4[5] = {0,3,2,1,4};
     mu_assert_int_arr_eq(exp4, sa4);
 
-    /*
+
     int sa5[14] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13};
     // 25, 95, 75, 22, 41, 16, 17, 51, 42, 94, 64, 82, 16, 41
     uint64_t keys5[14] = {com(2,5), com(9,5), com(7,5), com(2,2), com(4,1), com(1,6), com(1,7), com(5,1), com(4,2), com(9,4), com(6,4), com(8,2), com(1,6), com(4,1)};
@@ -750,7 +751,7 @@ MU_TEST(test_radixSort64Interval) {
     //  5   6   7   8   9  10
     //  5   6   8   7   10  9
     int exp5[14] = {0,1,2,3,4,5,6,8,7,10,9,11,12,13};
-    mu_assert_int_arr_eq(exp5, sa5);*/
+    mu_assert_int_arr_eq(exp5, sa5);
 }
 
 
@@ -774,7 +775,7 @@ MU_TEST_SUITE(fasta_parser_test_suite) {
     //MU_RUN_TEST(test_saConstructionRandom);
     //MU_RUN_TEST(test_saConstructionRandomSeed);
     MU_RUN_TEST(test_radixSort64Interval);
-    //MU_RUN_TEST(test_radixGetByte);
+    MU_RUN_TEST(test_radixGetByte);
 }
 
 
