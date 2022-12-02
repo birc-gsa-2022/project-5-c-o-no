@@ -115,6 +115,6 @@ struct Fastq* parseFastq(char **strptr) {
 
 void freeFastq(struct Fastq* fastq) {
     free(fastq->seqVal);
-    free(fastq->head);
-    free(fastq->seq);
+    //free(fastq->head);
+    //free(fastq->seq);
 }

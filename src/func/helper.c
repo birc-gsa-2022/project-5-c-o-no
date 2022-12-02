@@ -196,7 +196,7 @@ void readFromProcessed(char *processString, char* readString, int allowedEdits) 
             struct Range* Drange = malloc(sizeof *Drange);
             makeD(D, rC, RO, patVal, n, m, Drange);
 
-            char* editString = malloc(allowedEdits+m);
+            char* editString = malloc(allowedEdits+m+1);
 
             struct ApproxMatchContainer* matches = runApprox(patVal, n, m, D, C, O, allowedEdits, editString, saRange);
 
