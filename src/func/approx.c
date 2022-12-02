@@ -116,7 +116,7 @@ struct ApproxMatchContainer* runApprox(int* pattern, int n, int m, int* D, int* 
     com->allowedEdits = allowedEdits;
     com->r = r;
     struct Recur* rec = malloc(sizeof *rec);
-    rec->patIndex = m-1;
+    rec->patIndex = m;
     rec->editString = editString;
     rec->editIndex = 0;
     rec->rStart = 0;
