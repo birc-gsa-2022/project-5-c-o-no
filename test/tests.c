@@ -73,7 +73,7 @@ MU_TEST(test_parser_mis) {
     mu_assert_string_eq("chr1", (*fastas)->fasta_head);
     // I = 1, M = 2, P = 3, S = 4
     int chr1[11] = {2,1,4,4,1,4,4,1,3,3,1};
-    mu_assert_int_arr_eq(chr1, (*fastas)->fasta_sequence);
+    mu_assert_int_arr_eq(chr1, (*fastas)->fastaSeqVal);
     mu_assert_int_eq(12, (*fastas)->fasta_len);
 
     // Go to next fasta
