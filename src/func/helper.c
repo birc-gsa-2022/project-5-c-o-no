@@ -78,7 +78,7 @@ void processFastas(FILE* processFile, struct FastaContainer* fastaContainer, int
         struct Fasta* fasta = fastaContainer->fastas[i];
         fprintf(processFile, "%s\n", fasta->fasta_head); //Save head
         fprintf(processFile, "%d\n", fasta->fasta_len); //Save length
-        fprintf(processFile, "%d\n", fasta->alphabet.size); //Save alphabetsize
+        //fprintf(processFile, "%d\n", fasta->alphabet.size); //Save alphabetsize
         for(int j=0; j<fasta->fasta_len; j++) { //Save bwt
             //TODO We can change this to compress, but not necessary
             fprintf(processFile, "%d,", SAs[i][j] ? fasta->fastaSeqVal[SAs[i][j]-1] : 0);
@@ -93,11 +93,11 @@ void processFastas(FILE* processFile, struct FastaContainer* fastaContainer, int
             fprintf(processFile, "%d,", revSAs[i][j] ? fasta->fastaSeqVal[fasta->fasta_len-revSAs[i][j]-1] : 0);
         }
         fprintf(processFile, "\n");
-        for(int j=0; j<128; j++) {
+        /*for(int j=0; j<128; j++) {
             //TODO do in parser
             if(fasta->alphabet.symbols[j]) fprintf(processFile, "%c", j);
         }
-        fprintf(processFile, "\n");
+        fprintf(processFile, "\n");*/
 
         free(SAs[i]);
     }
@@ -135,8 +135,8 @@ void readFromProcessed(char *processString, char* readString, int allowedEdits) 
         processString++;
         int n = atoi(processString); //atoi stops at first non-int
         while(*(processString++) != '\n') {}
-        int alphabetSize = atoi(processString);
-        while(*(processString++) != '\n') {}
+        /*int alphabetSize = atoi(processString);
+        while(*(processString++) != '\n') {}*/
 
         //bwt
         //TODO could make each symbol distinguishable without ,
@@ -182,10 +182,10 @@ void readFromProcessed(char *processString, char* readString, int allowedEdits) 
 
         while(*(processString++) != '\n') {}
 
-        int *alphabet = calloc(128, sizeof *alphabet);
-        for(int i=0; i<alphabetSize-1; i++) {
-            alphabet[*(processString++)] = i+1;
-        }
+        //int *alphabet = calloc(128, sizeof *alphabet);
+        //for(int i=0; i<alphabetSize-1; i++) {
+        //    alphabet[*(processString++)] = i+1;
+        //}
 
 
         for (int j = 0; j < read_container->count; j++) {
