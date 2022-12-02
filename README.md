@@ -116,20 +116,21 @@ We used a bwt based approach.
 
 ## Problems encountered if any
 
-This project was more difficult than the four previous projects.
+This project was more difficult than the four previous projects. <br>
 The recursion was difficult to get a handle on. We started by making a fusion of recursion and explicit
 stack-based programing. In the recursion we had some issues, because we were passing references instead of values. 
-We latter changed it. 
-Like in previous projects memory managing was a recurrent problem, but we are way better at handling them now.
-This meant, that we had to reset the value to their previous state, once a function call was popped from the stack.
+We latter changed it. This meant, that we had to reset the value to their previous state, once a function call was popped from the stack.
+<br>
+Like in previous projects memory managing was a recurrent problem, but we are way better at handling them now. <br>
+Because we worked both radix sort and prefix doubling, we have a lot of dead code in the project. 
 
 ## Validation
 
 *How did you validate that the algorithm works?*
 
-We made tests for sub elements used on the main function. These tests where explicit in what output we expected.
-We were able to test the approximation match with no allowed edits the most, since we could easily compare to the other projects.
-Note that we also rely on the correctness of the implementation from the previous projects.
+We made tests for sub elements used on the main function. These tests where explicit in what output we expected. <br>
+We were able to test the approximation match with no allowed edits the most, since we could easily compare to the other projects. <br>
+Note that we also rely on the correctness of the implementation from the previous projects. This include comparing comparing sa construction using radix sort with sa construction using prefix doubling <br>
 
 ## Running time
 
@@ -163,4 +164,25 @@ Search k=4, on long.fa and long.fastq: 15 minutes, 48 sec.  <br>
 
 #### Version 2.0 2/12
 Switched from radix sort to prefix doubling sort. <br>
-Introduced Fastq struct. 
+Introduced Fastq struct.
+reprocessing on long.fa: 32 sec. <br>
+Search k=0, on long.fa and long.fastq: 4.418 sec. <br>
+Search k=1, on long.fa and long.fastq: 6.6 sec. <br>
+Search k=2, on long.fa and long.fastq: 42.374 sec. <br>
+Search k=3, on long.fa and long.fastq: 8 minutes, 32 sec.  <br>
+Search k=4, on long.fa and long.fastq: 13 minutes, 57 sec.  <br>
+<br>
+
+These times are measured while we still have a lot of dead code. 
+
+![](plots/processtime.png)
+
+Sa construction follows O(n log n)
+![](plots/sa.png)
+
+Processing the reads looks almost constant.  
+![](plots/read.png)
+
+
+Added more allowed edits makes the code run way slower. 
+![](plots/edit.png)
