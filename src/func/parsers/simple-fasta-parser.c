@@ -121,7 +121,7 @@ void update_fasta_by_sequence(char **strptr, struct Fasta *f) {
         string[l] = (char) bigAlphabet[string[l]];
     }
 
-    f->alphabet.size = alphabetSize;
+    //f->alphabet.size = alphabetSize;
     f->alphabet.symbols = bigAlphabet;
     f->alphabet.sightings = sightings;
     f->fasta_sequence = string;

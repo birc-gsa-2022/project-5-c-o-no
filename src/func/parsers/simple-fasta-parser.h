@@ -2,7 +2,7 @@
 #define SIMPLE_FASTA_PARSER_H
 
 struct Alphabet {
-    int size;
+    //int size;
     int *symbols;
     int *sightings;
 };

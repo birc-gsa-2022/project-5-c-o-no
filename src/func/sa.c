@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #define BYTEPOSSIBILITIES 256
-
+/*
 int *constructSARadix(struct Fasta fasta, int reverse) {
     int n = fasta.fasta_len;
     char* x = malloc(n*sizeof *x);
@@ -67,7 +67,7 @@ int **constructMultipleRevSARadix(struct FastaContainer *fastaContainer) {
     return SAs;
 }
 
-
+*/
 
 struct Interval binarySearch(const char* x, const int* sa, char patchar, int parIndex, struct Interval interval, int mode) {
     char xchar;

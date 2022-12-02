@@ -94,7 +94,6 @@ void processFastas(FILE* processFile, struct FastaContainer* fastaContainer, int
         }
         fprintf(processFile, "\n");
         /*for(int j=0; j<128; j++) {
-            //TODO do in parser
             if(fasta->alphabet.symbols[j]) fprintf(processFile, "%c", j);
         }*/
         fprintf(processFile, "\n");
