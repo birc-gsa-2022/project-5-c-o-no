@@ -119,10 +119,9 @@ struct Interval searchPatternInSA(struct Fasta fasta, const char* pattern, int* 
 }
 
 uint64_t getByte(uint64_t key, int index) {
-    uint32_t maskLow = 255; //11111111
-    uint64_t maskHigh = (uint64_t)maskLow << index*8;
-    uint64_t rightShift = (key & maskHigh) >> index*8;
-    return (rightShift & maskLow);
+    uint32_t mask = 255; //11111111
+    uint64_t rightShift = key >> index*8;
+    return (rightShift & mask);
 }
 
 void radixSort64Interval(int start, int end, int* sa, uint64_t* keys) {
