@@ -118,9 +118,9 @@ We used a bwt based approach.
 
 This project was more difficult than the four previous projects.
 The recursion was difficult to get a handle on. We started by making a fusion of recursion and explicit
-stack-based programing.
+stack-based programing. In the recursion we had some issues, because we were passing references instead of values. 
+We latter changed it. 
 Like in previous projects memory managing was a recurrent problem, but we are way better at handling them now.
-In the recursion we had some issues, because we were (and still is of 29/11) passing references instead of values.
 This meant, that we had to reset the value to their previous state, once a function call was popped from the stack.
 
 ## Validation
@@ -160,3 +160,7 @@ Search k=1, on long.fa and long.fastq: 14.316 sec. <br>
 Search k=2, on long.fa and long.fastq: 56.788 sec. <br>
 Search k=3, on long.fa and long.fastq: 9 minutes, 52 sec.  <br>
 Search k=4, on long.fa and long.fastq: 15 minutes, 48 sec.  <br>
+
+#### Version 2.0 2/12
+Switched from radix sort to prefix doubling sort. <br>
+Introduced Fastq struct. 

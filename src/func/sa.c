@@ -1,10 +1,6 @@
 #include "sa.h"
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <math.h>
-#include "constants.h"
 #define BYTEPOSSIBILITIES 256
 
 int *constructSARadix(struct Fasta fasta, int reverse) {
@@ -272,7 +268,8 @@ int* constructSAPrefixDoubling(struct Fasta fasta, int reverse) {
         if(radixSort64(sa, keys, rank, n)) break;
     }
 
-
+    free(rank);
+    free(keys);
     return sa;
 }
 

@@ -2,12 +2,11 @@
 #define HELPER_H
 #include <stdio.h>
 #include "parsers/simple-fasta-parser.h"
+#include "parsers/simple-fastq-parser.h"
 
 struct ReadContainer {
+    struct Fastq** reads;
     int count;
-    char** heads;
-    char** patterns;
-    int* patLens;
 };
 
 char *read_file(const char *file_name);

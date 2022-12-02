@@ -3,7 +3,6 @@
 #include "../src/func/approx.h"
 #include "../src/func/sa.h"
 #include "../src/func/helper.h"
-#include "../src/func/debugger.h"
 
 MU_TEST(test_makeDeq) {
     int* C = calloc(5, sizeof *C);
