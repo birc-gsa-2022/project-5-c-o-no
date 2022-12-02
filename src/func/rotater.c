@@ -9,13 +9,15 @@ void makeOandC(const int* bwt, int n, int** O, int* C) {
     if(bwt[0]) {
         firstRow[bwt[0]-1] = 1;
     }
+    //TODO this gives problems
     C[bwt[0]]++;
+
     O[0] = firstRow;
     int* prevRow;
 
 
     for(int i=1; i<n; i++) {
-        int* row = malloc(5*sizeof *row);
+        int* row = malloc(4*sizeof *row);
         prevRow = O[i-1];
         int curChar = bwt[i];
         for(int j=0; j<5; j++) {

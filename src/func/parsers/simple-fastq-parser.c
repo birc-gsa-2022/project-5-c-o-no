@@ -84,20 +84,19 @@ void updateFastqBySeq(char **strptr, struct Fastq* read) {
     *strptr = *strptr+i+shift;
     read->seq = string;
     read->length = i-1;
-    printf("i-1=%d\n", read->length);
     int* seqVal = malloc(i*sizeof *seqVal);
     for(int j=0; j<i; j++) {
         switch (string[j]) {
-            case 'A':
+            case 'A':  case 'a':
                 seqVal[j] = 1;
                 break;
-            case 'C':
+            case 'C':  case 'c':
                 seqVal[j] = 2;
                 break;
-            case 'G':
+            case 'G':  case 'g':
                 seqVal[j] = 3;
                 break;
-            case 'T':
+            case 'T':  case 't':
                 seqVal[j] = 4;
                 break;
         }
