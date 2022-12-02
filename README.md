@@ -105,16 +105,84 @@ Once you have implemented the `readmap` program (and tested it to the best of yo
 ## Algorithm
 
 *Which algorithm did you use for read mapping?*
+We used a bwt based approach.
 
 ## Insights you may have had while implementing the algorithm
 
+### Assumptions
+* The inputs are valid fasta and fastq files.
+* Sequences contain dna with only symbols from acgt.
+* The number of allowed edits is small enough that we can allocate memory of that size.
+
 ## Problems encountered if any
+
+This project was more difficult than the four previous projects. <br>
+The recursion was difficult to get a handle on. We started by making a fusion of recursion and explicit
+stack-based programing. In the recursion we had some issues, because we were passing references instead of values. 
+We latter changed it. This meant, that we had to reset the value to their previous state, once a function call was popped from the stack.
+<br>
+Like in previous projects memory managing was a recurrent problem, but we are way better at handling them now. <br>
+Because we worked both radix sort and prefix doubling, we have a lot of dead code in the project. 
 
 ## Validation
 
 *How did you validate that the algorithm works?*
 
+We made tests for sub elements used on the main function. These tests where explicit in what output we expected. <br>
+We were able to test the approximation match with no allowed edits the most, since we could easily compare to the other projects. <br>
+Note that we also rely on the correctness of the implementation from the previous projects. This include comparing comparing sa construction using radix sort with sa construction using prefix doubling <br>
+
 ## Running time
 
 *List experiments and results that illustrates the running time. Add figures by embedding them here, as you learned how to do in project 1.*
 
+### Timeline of running time
+The code is run on the following machine: <br>
+Lenovo Legion 5 <br>
+Processor	AMD Ryzen 7 4800H with Radeon Graphics   2.90 GHz <br>
+Installed RAM	16.0 GB (15.4 GB usable) <br>
+Running Windows 11 <br>
+
+#### Version 1.0 29/11
+First working version
+
+Preprocessing on long.fa: 22 minutes, 32 sec. <br>
+Search k=0, on long.fa and long.fastq: 13.659 sec. <br>
+Search k=1, on long.fa and long.fastq: 14.276 sec. <br>
+Search k=2, on long.fa and long.fastq: 59.95 sec. <br>
+Search k=3, on long.fa and long.fastq: 10 minutes, 30 sec.  <br>
+Search k=4, on long.fa and long.fastq: 16 minutes, 32 sec.  <br>
+
+#### Version 1.1 29/11
+Recursion with value instead of reference
+
+Search k=0, on long.fa and long.fastq: 15 sec. <br>
+Search k=1, on long.fa and long.fastq: 14.316 sec. <br>
+Search k=2, on long.fa and long.fastq: 56.788 sec. <br>
+Search k=3, on long.fa and long.fastq: 9 minutes, 52 sec.  <br>
+Search k=4, on long.fa and long.fastq: 15 minutes, 48 sec.  <br>
+
+#### Version 2.0 2/12
+Switched from radix sort to prefix doubling sort. <br>
+Introduced Fastq struct.
+reprocessing on long.fa: 32 sec. <br>
+Search k=0, on long.fa and long.fastq: 4.418 sec. <br>
+Search k=1, on long.fa and long.fastq: 6.6 sec. <br>
+Search k=2, on long.fa and long.fastq: 42.374 sec. <br>
+Search k=3, on long.fa and long.fastq: 8 minutes, 32 sec.  <br>
+Search k=4, on long.fa and long.fastq: 13 minutes, 57 sec.  <br>
+<br>
+
+These times are measured while we still have a lot of dead code. 
+
+![](plots/processtime.png)
+
+Sa construction follows O(n log n)
+![](plots/sa.png)
+
+Processing the reads looks almost constant.  
+![](plots/read.png)
+
+
+Added more allowed edits makes the code run way slower. 
+![](plots/edit.png)
