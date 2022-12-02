@@ -180,21 +180,19 @@ void radixSort64Interval(int start, int end, int* sa, uint64_t* keys) {
     free(keyWriter);
 }
 
+/** Return 1 if sorted */
 int radixSort64(int* sa, uint64_t* keys, uint32_t* rank, const int n) {
-    //Return 1 if sorted
 
-    uint64_t prevKey = keys[0];
+    uint32_t prevRank = rank[sa[0]];
     int start = 0;
     int end = 0;
     int sorted = 1;
-    int rankVal = 0;
 
     for(int i=1; i<n; i++) {
         //Find interval to sort
-        if(keys[i]==prevKey) end++;
+        if(rank[sa[i]]==prevRank) end++;
         else{
-            prevKey = keys[i];
-            ++rankVal;
+            prevRank = rank[sa[i]];
 
             if(start!=end) {
                 sorted = 0;
@@ -205,13 +203,24 @@ int radixSort64(int* sa, uint64_t* keys, uint32_t* rank, const int n) {
             start = i;
             end = i;
         }
-        rank[i] = rankVal;
-
     }
     if(start!=end) {
         sorted = 0;
         radixSort64Interval(start, end, sa, keys);
     }
+
+    //Make rank array based on order of sa and keys
+    //TODO do at same time as making sa and keys
+    int rankVal = 0;
+    uint64_t prevKey = keys[0];
+    for(int i=0; i<n; i++) {
+        if(keys[i]!= prevKey) {
+            prevKey = keys[i];
+            ++rankVal;
+        }
+        rank[sa[i]] = rankVal;
+    }
+
 
     return sorted;
 }
@@ -221,14 +230,14 @@ int* constructSAPrefixDoubling(struct Fasta fasta, int reverse) {
     int n = fasta.fasta_len;
     int* sa = malloc(n*sizeof *sa);
     uint32_t* rank = malloc(n*sizeof *rank);
-    uint64_t* key = malloc(n*sizeof *key);
+    uint64_t* keys = malloc(n*sizeof *keys);
 
 
     //Initial sorting
     sa[n-1] = n-1;
     if(n==1) return sa;
     rank[n-1] = 0;
-    key[n-1] = 0;
+    keys[n-1] = 0;
 
     for(int i=0; i<n-1; i++) {
         sa[i] = i;
@@ -236,32 +245,31 @@ int* constructSAPrefixDoubling(struct Fasta fasta, int reverse) {
     }
 
     for(int i=0; i<n-2; i++) {
-        key[i] = (uint64_t)rank[i]<<32 | rank[i+1];
+        keys[i] = (uint64_t)rank[i]<<32 | rank[i+1];
     }
-    key[n-2] = (uint64_t)rank[n-2]<<32;
-    radixSort64Interval(0, n-1, sa, key);
+    keys[n-2] = (uint64_t)rank[n-2]<<32;
+    // Sort sa and keys
+    radixSort64Interval(0, n-1, sa, keys);
 
-
-    rank[0] = 0;
-    int r = 1;
-    uint64_t prevKey = key[1];
-    for(int i=1; i<n; i++) {
-        if(key[i]!=prevKey) {
-            r++;
-            prevKey = key[i];
+    //Make rank array based on order of sa and keys
+    int rankVal = 0;
+    uint64_t prevKey = keys[0];
+    for(int i=0; i<n; i++) {
+        if(keys[i]!= prevKey) {
+            prevKey = keys[i];
+            ++rankVal;
         }
-        rank[i] = r;
+        rank[sa[i]] = rankVal;
     }
 
-    //math.h not found, can't do k<(int)log2(n)
-    for(int k=2; (1<<k)<=n; k <<= 1) {
+    for(int k=2; k<=n; k <<= 1) {
         for(int i=0; i<n; i++) {
             int saVal = sa[i];
             uint64_t lower = saVal+k<n ? rank[saVal+k] : 0;
-            key[i] = (uint64_t)rank[i]<<32 | lower;
+            keys[i] = (uint64_t)rank[sa[i]]<<32 | lower;
         }
 
-        if(radixSort64(sa, key, rank, n)) break;
+        if(radixSort64(sa, keys, rank, n)) break;
     }
 
 
@@ -299,13 +307,13 @@ int **constructMultipleRevSAPrefixDoubling(struct FastaContainer *fastaContainer
 
 
 int *constructSA(struct Fasta fasta, int reverse) {
-    return constructSARadix(fasta, reverse);
+    return constructSAPrefixDoubling(fasta, reverse);
 }
 
 int **constructMultipleSA(struct FastaContainer *fastaContainer) {
-    return constructMultipleSARadix(fastaContainer);
+    return constructMultipleSAPrefixDoubling(fastaContainer);
 }
 
 int **constructMultipleRevSA(struct FastaContainer *fastaContainer) {
-    return constructMultipleRevSARadix(fastaContainer);
+    return constructMultipleRevSAPrefixDoubling(fastaContainer);
 }
