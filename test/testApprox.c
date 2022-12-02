@@ -771,6 +771,20 @@ MU_TEST(test_radixSort64Interval) {
     //  5   6   8   7   10  9
     int exp5[14] = {0,1,2,3,4,5,6,8,7,10,9,11,12,13};
     mu_assert_int_arr_eq(exp5, sa5);
+
+
+
+    int sa6[5] = {0,1,2,3,4};
+    // ACAC
+    // 12, 21, 12, 20, 00
+    uint64_t keys6[5] = {com(1,2), com(2,1), com(1,2), com(2,0), com(0,0)};
+    radixSort64Interval(0,4, sa6, keys6);
+    int exp6[5] = {4,0,2,3,1};
+    uint64_t exp6Key[5] = {com(0,0), com(1,2), com(1,2), com(2,0), com(2,1)};
+    mu_assert_int_arr_eq(exp6, sa6);
+
+    mu_assert_int_arr_eq(exp6Key, keys6);
+
 }
 
 
@@ -790,7 +804,7 @@ MU_TEST_SUITE(fasta_parser_test_suite) {
     MU_RUN_TEST(test_saAlg);
     MU_RUN_TEST(test_runApproxExactMis);
     MU_RUN_TEST(test_nonConfirmed);*/
-    //MU_RUN_TEST(test_saConstructionKnow);
+    MU_RUN_TEST(test_saConstructionKnow);
     //MU_RUN_TEST(test_saConstructionRandom);
     //MU_RUN_TEST(test_saConstructionRandomSeed);
     MU_RUN_TEST(test_radixSort64Interval);

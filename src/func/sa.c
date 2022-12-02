@@ -187,11 +187,10 @@ int radixSort64(int* sa, uint64_t* keys, uint32_t* rank, const int n) {
     int start = 0;
     int end = 0;
     int sorted = 1;
-    int rankVal = 1;
+    int rankVal = 0;
 
     for(int i=1; i<n; i++) {
         //Find interval to sort
-        rank[i] = rankVal;
         if(keys[i]==prevKey) end++;
         else{
             prevKey = keys[i];
@@ -199,12 +198,14 @@ int radixSort64(int* sa, uint64_t* keys, uint32_t* rank, const int n) {
 
             if(start!=end) {
                 sorted = 0;
+                //TODO can do as 32 bit by invariant
                 radixSort64Interval(start, end, sa, keys);
             }
 
             start = i;
             end = i;
         }
+        rank[i] = rankVal;
 
     }
     if(start!=end) {
@@ -225,6 +226,7 @@ int* constructSAPrefixDoubling(struct Fasta fasta, int reverse) {
 
     //Initial sorting
     sa[n-1] = n-1;
+    if(n==1) return sa;
     rank[n-1] = 0;
     key[n-1] = 0;
 
@@ -239,8 +241,20 @@ int* constructSAPrefixDoubling(struct Fasta fasta, int reverse) {
     key[n-2] = (uint64_t)rank[n-2]<<32;
     radixSort64Interval(0, n-1, sa, key);
 
+
+    rank[0] = 0;
+    int r = 1;
+    uint64_t prevKey = key[1];
+    for(int i=1; i<n; i++) {
+        if(key[i]!=prevKey) {
+            r++;
+            prevKey = key[i];
+        }
+        rank[i] = r;
+    }
+
     //math.h not found, can't do k<(int)log2(n)
-    for(int k=1; (1<<k)<n; k <<= 1) {
+    for(int k=2; (1<<k)<=n; k <<= 1) {
         for(int i=0; i<n; i++) {
             int saVal = sa[i];
             uint64_t lower = saVal+k<n ? rank[saVal+k] : 0;
