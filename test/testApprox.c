@@ -795,7 +795,7 @@ MU_TEST(test_radixSort64Interval) {
 
 
 MU_TEST_SUITE(fasta_parser_test_suite) {
-    MU_RUN_TEST(test_makeDeq);
+    /*MU_RUN_TEST(test_makeDeq);
     MU_RUN_TEST(test_makeDnotEq);
     MU_RUN_TEST(test_makeD1Edit);
     MU_RUN_TEST(test_runApproxExactEqSmall);
@@ -814,7 +814,7 @@ MU_TEST_SUITE(fasta_parser_test_suite) {
     //MU_RUN_TEST(test_saConstructionRandom);
     //MU_RUN_TEST(test_saConstructionRandomSeed);
     MU_RUN_TEST(test_radixSort64Interval);
-    MU_RUN_TEST(test_radixGetByte);
+    MU_RUN_TEST(test_radixGetByte);*/
 }
 
 
