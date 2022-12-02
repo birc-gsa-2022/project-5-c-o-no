@@ -84,6 +84,7 @@ void updateFastqBySeq(char **strptr, struct Fastq* read) {
     *strptr = *strptr+i+shift;
     read->seq = string;
     read->length = i-1;
+    printf("i-1=%d\n", read->length);
     int* seqVal = malloc(i*sizeof *seqVal);
     for(int j=0; j<i; j++) {
         switch (string[j]) {

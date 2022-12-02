@@ -30,9 +30,6 @@ int main(int argc, char const *argv[])
         int** revSAs = constructMultipleRevSA(fastaContainer);
         processFastas(processFile, fastaContainer, SAs, revSAs);
         fclose(processFile);
-        for(int i=0; i<fastaContainer->numberOfFastas; i++) {
-            free(SAs[i]);
-        }
         free(SAs);
         free_fasta_container(fastaContainer);
     }

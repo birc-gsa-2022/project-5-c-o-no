@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "debugger.h"
 
 
 char *read_file(const char *file_name) {
@@ -52,23 +53,15 @@ struct ReadContainer* makeReadContainer(char* readString) {
     struct ReadContainer* rc = malloc(sizeof *rc);
 
     int listSize = 8;
-    int* patLens = malloc(listSize*sizeof *patLens);
-    char** heads = malloc(listSize*sizeof *heads);
-    char** patterns = malloc(listSize*sizeof *patterns);
     struct Fastq** reads = malloc(listSize*sizeof *reads);
 
     int count = 0;
     while (*readString != '\0') {
         if(count>=listSize) {
             listSize <<= 1;
-            patLens = realloc(patLens, listSize*sizeof *patLens);
-            heads = realloc(heads, listSize*sizeof *heads);
-            patterns = realloc(patterns, listSize*sizeof *patterns);
+            reads = realloc(reads,listSize*sizeof *reads);
         }
         struct Fastq* read = parseFastq(&readString);
-        //heads[count] = read_fastq_head(&readString);
-        //patterns[count] = read_fastq_pattern(&readString);
-        //patLens[count] = (int) strlen(patterns[count]); // TODO in parsing
         reads[count] = read;
         count++;
     }
@@ -128,10 +121,7 @@ void printEditString(struct ApproxMatch* am) {
 void readFromProcessed(char *processString, char* readString, int allowedEdits) {
     struct Range* saRange = malloc(sizeof *saRange);
     struct ReadContainer *read_container = makeReadContainer(readString);
-    int count = 0;
     while(*processString != '\0') {
-        printf("reading %d...%d\n", count++, read_container->count);
-
         char *fastaHead = processString;
         while (*(++processString) != '\n') {}
         if(*(processString-1) == '\r') {
@@ -140,6 +130,7 @@ void readFromProcessed(char *processString, char* readString, int allowedEdits) 
         else {
             *(processString) = '\0';
         }
+
 
         processString++;
         int n = atoi(processString); //atoi stops at first non-int
