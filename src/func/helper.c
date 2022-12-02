@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "debugger.h"
 
 
 char *read_file(const char *file_name) {
@@ -52,28 +53,21 @@ struct ReadContainer* makeReadContainer(char* readString) {
     struct ReadContainer* rc = malloc(sizeof *rc);
 
     int listSize = 8;
-    int* patLens = malloc(listSize*sizeof *patLens);
-    char** heads = malloc(listSize*sizeof *heads);
-    char** patterns = malloc(listSize*sizeof *patterns);
+    struct Fastq** reads = malloc(listSize*sizeof *reads);
 
     int count = 0;
     while (*readString != '\0') {
         if(count>=listSize) {
             listSize <<= 1;
-            patLens = realloc(patLens, listSize*sizeof *patLens);
-            heads = realloc(heads, listSize*sizeof *heads);
-            patterns = realloc(patterns, listSize*sizeof *patterns);
+            reads = realloc(reads,listSize*sizeof *reads);
         }
-        heads[count] = read_fastq_head(&readString);
-        patterns[count] = read_fastq_pattern(&readString);
-        patLens[count] = (int) strlen(patterns[count]); // TODO in parsing
+        struct Fastq* read = parseFastq(&readString);
+        reads[count] = read;
         count++;
     }
 
     rc->count=count;
-    rc->patterns=patterns;
-    rc->heads=heads;
-    rc->patLens=patLens;
+    rc->reads=reads;
     return rc;
 }
 
@@ -87,7 +81,7 @@ void processFastas(FILE* processFile, struct FastaContainer* fastaContainer, int
         fprintf(processFile, "%d\n", fasta->alphabet.size); //Save alphabetsize
         for(int j=0; j<fasta->fasta_len; j++) { //Save bwt
             //TODO We can change this to compress, but not necessary
-            fprintf(processFile, "%d,", SAs[i][j] ? fasta->fasta_sequence[SAs[i][j]-1] : 0);
+            fprintf(processFile, "%d,", SAs[i][j] ? fasta->fastaSeqVal[SAs[i][j]-1] : 0);
         }
         fprintf(processFile, "\n");
         for(int j=0; j<fasta->fasta_len; j++) { //Save sa
@@ -96,7 +90,7 @@ void processFastas(FILE* processFile, struct FastaContainer* fastaContainer, int
         fprintf(processFile, "\n");
         for(int j=0; j<fasta->fasta_len; j++) { //Save revbwt
             //TODO We can change this to compress, but not necessary
-            fprintf(processFile, "%d,", revSAs[i][j] ? fasta->fasta_sequence[fasta->fasta_len-revSAs[i][j]-1] : 0);
+            fprintf(processFile, "%d,", revSAs[i][j] ? fasta->fastaSeqVal[fasta->fasta_len-revSAs[i][j]-1] : 0);
         }
         fprintf(processFile, "\n");
         for(int j=0; j<128; j++) {
@@ -137,6 +131,7 @@ void readFromProcessed(char *processString, char* readString, int allowedEdits) 
             *(processString) = '\0';
         }
 
+
         processString++;
         int n = atoi(processString); //atoi stops at first non-int
         while(*(processString++) != '\n') {}
@@ -157,7 +152,9 @@ void readFromProcessed(char *processString, char* readString, int allowedEdits) 
 
         makeOandC(bwt, n, O, C);
 
+
         while(*(processString++) != '\n') {}
+
 
         //sa
         int *sa = malloc(n * sizeof *sa);
@@ -165,6 +162,7 @@ void readFromProcessed(char *processString, char* readString, int allowedEdits) 
             sa[i] = atoi(processString);
             while(*(processString++) != ',') {}
         }
+
 
         while(*(processString++) != '\n') {}
 
@@ -190,24 +188,19 @@ void readFromProcessed(char *processString, char* readString, int allowedEdits) 
         }
 
 
-
         for (int j = 0; j < read_container->count; j++) {
-            char *readHead = read_container->heads[j];
-            char *pattern = read_container->patterns[j];
-            int m = read_container->patLens[j];
+            char *readHead = read_container->reads[j]->head;
+            char *pattern = read_container->reads[j]->seq;
+            int* patVal = read_container->reads[j]->seqVal;
+            int m = read_container->reads[j]->length;
 
-            //TODO do in parsing
-            int *patternConvert = malloc(m*sizeof *patternConvert);
-            for(int i=0; i<m; i++) {
-                patternConvert[i] = alphabet[pattern[i]];
-            }
             int* D = malloc(m*sizeof *D);
             struct Range* Drange = malloc(sizeof *Drange);
-            makeD(D, rC, RO, patternConvert, n, m, Drange);
+            makeD(D, rC, RO, patVal, n, m, Drange);
 
-            char* editString = malloc(allowedEdits+m);
+            char* editString = malloc(allowedEdits+m+1);
 
-            struct ApproxMatchContainer* matches = runApprox(patternConvert, n, m, D, C, O, allowedEdits, editString, saRange);
+            struct ApproxMatchContainer* matches = runApprox(patVal, n, m, D, C, O, allowedEdits, editString, saRange);
 
             for (int i = 0; i < matches->amount; ++i) {
                 int start = matches->AMs[i]->rStart;
@@ -219,7 +212,6 @@ void readFromProcessed(char *processString, char* readString, int allowedEdits) 
                     printf("\t%s\n", pattern);
                 }
             }
-            free(patternConvert);
             free(editString);
             freeApproxMatchContainer(matches);
             free(matches);
@@ -231,10 +223,14 @@ void readFromProcessed(char *processString, char* readString, int allowedEdits) 
             free(O[i]);
             free(RO[i]);
         }
+
         free(O);
         free(C);
         free(RO);
         free(rC);
         free(sa);
+    }
+    for(int i=0; i<read_container->count; i++) {
+        freeFastq(read_container->reads[i]);
     }
 }

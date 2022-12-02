@@ -3,7 +3,6 @@
 #include "../src/func/approx.h"
 #include "../src/func/sa.h"
 #include "../src/func/helper.h"
-#include "../src/func/debugger.h"
 
 MU_TEST(test_makeDeq) {
     int* C = calloc(5, sizeof *C);
@@ -374,7 +373,7 @@ MU_TEST(test_saAlg) {
     //char* seq = "12312412";
 
     char * mal = malloc(sizeof(*mal)*9);
-    char* seq = "abcabdab";
+    char* seq = "acgactac";
     strcpy(mal, seq);
     update_fasta_by_sequence(&mal, fasta);
     mu_assert_int_eq(9, fasta->fasta_len);
@@ -629,7 +628,7 @@ struct Fasta* makeFasta(char* seq) {
 
 MU_TEST(test_saConstructionKnow) {
     struct Fasta* fasta = malloc(sizeof *fasta);
-    /*
+
     char * malsmall = malloc(sizeof(*malsmall)*3);
     char* seqsmall = "AA";
     strcpy(malsmall, seqsmall);
@@ -647,7 +646,7 @@ MU_TEST(test_saConstructionKnow) {
     int exp0Rev[5] = {4,3,1,2,0};
     compareSAExpected(exp0, *fasta, 0);
     compareSAExpected(exp0Rev, *fasta, 1);
-*/
+
 
     char * mal1 = malloc(sizeof(*mal1)*9);
     char* seq1 = "ACGTACGT";

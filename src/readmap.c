@@ -30,8 +30,8 @@ int main(int argc, char const *argv[])
         int** revSAs = constructMultipleRevSA(fastaContainer);
         processFastas(processFile, fastaContainer, SAs, revSAs);
         fclose(processFile);
-        free_fasta_container(fastaContainer);
         free(SAs);
+        free_fasta_container(fastaContainer);
     }
     else if ((argc == 5) && strcmp("-d", argv[1]) == 0)
     {

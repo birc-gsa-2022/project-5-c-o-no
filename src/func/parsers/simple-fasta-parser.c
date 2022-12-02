@@ -84,16 +84,16 @@ void update_fasta_by_sequence(char **strptr, struct Fasta *f) {
         //debugger[l] = string[l];
         //TODO use this and make tests fit
         switch (string[l]) {
-            case 'A':
+        case 'A': case 'a':
                 fastaSeqVal[l] = 1;
                 break;
-            case 'C':
+            case 'C':  case 'c':
                 fastaSeqVal[l] = 2;
                 break;
-            case 'G':
+            case 'G':  case 'g':
                 fastaSeqVal[l] = 3;
                 break;
-            case 'T':
+            case 'T':  case 't':
                 fastaSeqVal[l] = 4;
                 break;
             case '\0':
