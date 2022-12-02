@@ -152,7 +152,9 @@ void readFromProcessed(char *processString, char* readString, int allowedEdits) 
 
         makeOandC(bwt, n, O, C);
 
+
         while(*(processString++) != '\n') {}
+
 
         //sa
         int *sa = malloc(n * sizeof *sa);
@@ -160,6 +162,7 @@ void readFromProcessed(char *processString, char* readString, int allowedEdits) 
             sa[i] = atoi(processString);
             while(*(processString++) != ',') {}
         }
+
 
         while(*(processString++) != '\n') {}
 
@@ -183,7 +186,6 @@ void readFromProcessed(char *processString, char* readString, int allowedEdits) 
         for(int i=0; i<alphabetSize-1; i++) {
             alphabet[*(processString++)] = i+1;
         }
-
 
 
         for (int j = 0; j < read_container->count; j++) {

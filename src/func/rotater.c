@@ -2,6 +2,7 @@
 #include "helper.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "constants.h"
 
 void makeOandC(const int* bwt, int n, int** O, int* C) {
 
@@ -15,12 +16,11 @@ void makeOandC(const int* bwt, int n, int** O, int* C) {
     O[0] = firstRow;
     int* prevRow;
 
-
     for(int i=1; i<n; i++) {
         int* row = malloc(4*sizeof *row);
         prevRow = O[i-1];
         int curChar = bwt[i];
-        for(int j=0; j<5; j++) {
+        for(int j=0; j<NUMDIFFCHARS; j++) {
             row[j] = prevRow[j] + (curChar-1==j);
         }
         C[curChar]++;
